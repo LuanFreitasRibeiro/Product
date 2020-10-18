@@ -11,29 +11,15 @@ using System;
 namespace ProductCatalog.Migrations
 {
     [DbContext(typeof(StoreDataContext))]
-    partial class StoreDataContextModelSnapshot : ModelSnapshot
+    [Migration("20200923134120_v1.6")]
+    partial class v16
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("ProductCatalog.Models.Brand", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("varchar(120)")
-                        .HasMaxLength(120);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Brand");
-                });
 
             modelBuilder.Entity("ProductCatalog.Models.Category", b =>
                 {
@@ -54,8 +40,6 @@ namespace ProductCatalog.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<int>("BrandId");
 
                     b.Property<int>("CategoryId");
 
@@ -85,8 +69,6 @@ namespace ProductCatalog.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BrandId");
-
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Product");
@@ -94,11 +76,6 @@ namespace ProductCatalog.Migrations
 
             modelBuilder.Entity("ProductCatalog.Models.Product", b =>
                 {
-                    b.HasOne("ProductCatalog.Models.Brand", "Brand")
-                        .WithMany("Products")
-                        .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("ProductCatalog.Models.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")

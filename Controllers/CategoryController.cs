@@ -26,7 +26,7 @@ namespace ProductCatalog.Controllers
         }
 
         //Read
-        //Buscando o protudo por id
+        //Buscando o categoria por id
         [Route("v1/categories/{id}")]
         [HttpGet]
         public Category GetCategoryId(int id)

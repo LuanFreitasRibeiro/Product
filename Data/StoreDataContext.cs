@@ -10,7 +10,8 @@ namespace ProductCatalog.Data
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
-
+        public DbSet<Brand> Brands { get; set; }
+        
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(@"Server=localhost,1433;Database=prodcat;User ID=SA;Password=MSSQL1w2@3%$!");
@@ -20,6 +21,7 @@ namespace ProductCatalog.Data
         {
             builder.ApplyConfiguration(new ProductMap());
             builder.ApplyConfiguration(new CategoryMap());
+            builder.ApplyConfiguration(new BrandMap());
         }
     }
 }

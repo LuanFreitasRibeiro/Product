@@ -56,6 +56,7 @@ namespace ProductCatalog.Controllers
             product.LastUpdateDate = DateTime.Now;
             product.Price = model.Price;
             product.Quantity = model.Quantity;
+            product.BrandId = model.BrandId;
 
             _repository.Save(product);
 
@@ -89,6 +90,7 @@ namespace ProductCatalog.Controllers
             product.LastUpdateDate = DateTime.Now;
             product.Price = model.Price;
             product.Quantity = model.Quantity;
+            product.BrandId = model.BrandId;
 
             _repository.Update(product);
 

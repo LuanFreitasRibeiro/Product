@@ -11,9 +11,10 @@ using System;
 namespace ProductCatalog.Migrations
 {
     [DbContext(typeof(StoreDataContext))]
-    partial class StoreDataContextModelSnapshot : ModelSnapshot
+    [Migration("20200923213935_v1.7")]
+    partial class v17
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,7 +28,7 @@ namespace ProductCatalog.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("varchar(120)")
+                        .HasColumnName("varchar(120)")
                         .HasMaxLength(120);
 
                     b.HasKey("Id");
@@ -55,7 +56,7 @@ namespace ProductCatalog.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("BrandId");
+                    b.Property<int?>("BrandId");
 
                     b.Property<int>("CategoryId");
 
@@ -94,10 +95,9 @@ namespace ProductCatalog.Migrations
 
             modelBuilder.Entity("ProductCatalog.Models.Product", b =>
                 {
-                    b.HasOne("ProductCatalog.Models.Brand", "Brand")
+                    b.HasOne("ProductCatalog.Models.Brand")
                         .WithMany("Products")
-                        .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("BrandId");
 
                     b.HasOne("ProductCatalog.Models.Category", "Category")
                         .WithMany("Products")

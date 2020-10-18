@@ -19,6 +19,7 @@ namespace ProductCatalog
             services.AddScoped<StoreDataContext, StoreDataContext>();
             services.AddTransient<ProductRepository, ProductRepository>();
             services.AddTransient<CategoryRepository, CategoryRepository>();
+            services.AddTransient<BrandRepository, BrandRepository>();
 
             services.AddSwaggerGen(x => {
                 x.SwaggerDoc("v1", new Info { Title = "Store Catalog", Version="v1" });

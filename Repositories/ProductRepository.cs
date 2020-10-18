@@ -21,13 +21,17 @@ namespace ProductCatalog.Repositories
         {
            return _context.Products
                     .Include(x => x.Category)
+                    .Include(x => x.Brand)
                     .Select(x => new ListProductViewModel
                     {
                         Id = x.Id,
                         Name = x.Name,
+                        Description = x.Description,
                         Price = x.Price,
+                        CategoryId = x.Category.Id,
                         Category = x.Category.Name,
-                        CategoryId = x.Category.Id
+                        BrandId = x.Brand.Id,
+                        Brand = x.Brand.Name
                     })
                     .AsNoTracking()
                     .ToList();
