@@ -28,7 +28,7 @@ namespace ProductCatalog.Repositories
                     .ToList();
         }
 
-        public Brand GetBrandId(int id)
+        public Brand GetBrandbyId(int id)
         {
             return _context.Brands.Find(id);
         }

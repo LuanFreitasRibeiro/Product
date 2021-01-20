@@ -33,7 +33,6 @@ namespace ProductCatalog.Repositories
                         BrandId = x.Brand.Id,
                         Brand = x.Brand.Name
                     })
-                    .AsNoTracking()
                     .ToList();
         }
 
