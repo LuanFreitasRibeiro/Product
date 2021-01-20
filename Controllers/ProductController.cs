@@ -8,6 +8,8 @@ using ProductCatalog.ViewModels.ProductViewModels;
 
 namespace ProductCatalog.Controllers
 {
+    [Route("v1/product")]
+    [Produces("application/json")]
     public class ProductController : Controller
     {
         private readonly ProductRepository _repository;
@@ -18,24 +20,30 @@ namespace ProductCatalog.Controllers
         }
 
         //Read 
-        [Route("v1/products")]
         [HttpGet]
+        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public IEnumerable<ListProductViewModel> GetAllProducts()
         {
             return _repository.GetAllProducts();
         }
 
         //Read
-        [Route("v1/products/{id}")]
-        [HttpGet]
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public Product GetProductsId(int id)
         {
             return _repository.GetProductsId(id);
         }
 
         //Create
-        [Route("v1/products")]
         [HttpPost]
+        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public ResultViewModel Post([FromBody]EditorProductViewModel model)
         {
             model.Validate();
@@ -69,9 +77,11 @@ namespace ProductCatalog.Controllers
         }
 
         //Update
-        [Route("v1/products")]
-        [HttpPut]
-        public ResultViewModel Put([FromBody]EditorProductViewModel model)
+        [HttpPut("{Id}")]
+        [ProducesResponseType(typeof(Brand), 202)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(409)]
+        public ResultViewModel Put([FromRoute] EditorProductViewModel categoryId, [FromBody]EditorProductViewModel model)
         {
             model.Validate();
             if(model.Invalid)
@@ -82,7 +92,7 @@ namespace ProductCatalog.Controllers
                     Data = model.Notifications
                 };
             
-            var product = _repository.GetProductsId(model.Id);
+            var product = _repository.GetProductsId(categoryId.Id);
             product.Name = model.Name;
             product.CategoryId = model.CategoryId;
             product.Description = model.Description;
@@ -103,20 +113,14 @@ namespace ProductCatalog.Controllers
         }
 
         //Delete
-        [Route("v1/products")]
-        [HttpDelete]
-        public ResultViewModel Delete([FromBody]EditorProductViewModel model)
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(Brand), 204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public ResultViewModel Delete([FromRoute]EditorProductViewModel categoryId)
         {
-            if(model.Invalid)
-                return new ResultViewModel
-                {
-                    Success = false,
-                    Message = "Não foi possível deletar o produto",
-                    Data = model.Notifications
-                };
-
-            var product = _repository.GetProductsId(model.Id);
-            product.Id = model.Id;
+            var product = _repository.GetProductsId(categoryId.Id);
+            product.Id = categoryId.Id;
 
             _repository.Delete(product);
 
@@ -124,7 +128,7 @@ namespace ProductCatalog.Controllers
             {
                 Success = true,
                 Message = "Produto deletado com sucesso!",
-                Data = model
+                Data = ""
             };
         }
     }

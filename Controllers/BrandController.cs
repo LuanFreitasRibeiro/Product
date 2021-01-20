@@ -7,6 +7,8 @@ using ProductCatalog.ViewModels.BrandsViewModels;
 
 namespace ProductCatalog.Controllers
 {
+    [Produces("application/json")]
+    [Route("v1/brands")]
     public class BrandController : Controller
     {
         private readonly BrandRepository _repository;
@@ -17,8 +19,10 @@ namespace ProductCatalog.Controllers
         }
 
         //Read
-        [Route("v1/brands")]
         [HttpGet]
+        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public IEnumerable<ListBrandViewModel> GetAllBrands()
         {
             return _repository.GetAllBrands();
@@ -26,26 +30,32 @@ namespace ProductCatalog.Controllers
 
         //Read
         //Buscando as marcas por ID
-        [Route("v1/brands/{id}")]
-        [HttpGet]
-        public Brand GetBrandId(int id)
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public Brand GetBranBydId(int id)
         {
-            return _repository.GetBrandId(id);
+            return _repository.GetBrandbyId(id);
         }
 
         //Read
         //Buscando produtos por marca
-        [Route("v1/brands/{id}/products")]
-        [HttpGet]
+        [HttpGet("{id}/products")]
+        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public IEnumerable<Product> GetProductsBrand(int id)
         {
             return _repository.GetProductsBrand(id);
         }
 
         //Create
-        [Route("v1/brands")]
         [HttpPost]
-        public ResultViewModel Post([FromBody]EditorBrandViewModel model)
+        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public ResultViewModel CreateBrand([FromBody]EditorBrandViewModel model)
         {
             model.Validate();
             if(model.Invalid)
@@ -70,9 +80,11 @@ namespace ProductCatalog.Controllers
         }
 
         //Update
-        [Route("v1/brands")]
-        [HttpPut]
-        public ResultViewModel Put([FromBody]EditorBrandViewModel model)
+        [HttpPut("{Id}")]
+        [ProducesResponseType(typeof(Brand), 202)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(409)]
+        public ResultViewModel UpdateBrand([FromRoute] EditorBrandViewModel brandId, [FromBody]EditorBrandViewModel model)
         {
             model.Validate();
             if(model.Invalid)
@@ -83,7 +95,7 @@ namespace ProductCatalog.Controllers
                     Data = model.Notifications
                 };
 
-            var brand = _repository.GetBrandId(model.Id);
+            var brand = _repository.GetBrandbyId(brandId.Id);
             brand.Name = model.Name;
 
             _repository.Update(brand);
@@ -97,12 +109,14 @@ namespace ProductCatalog.Controllers
         }
 
         //Delete
-        [Route("v1/brands")]
-        [HttpDelete]
-        public ResultViewModel Delete([FromBody]EditorBrandViewModel model)
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(Brand), 204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public ResultViewModel Delete([FromRoute] EditorBrandViewModel brandId)
         {
-            var brand = _repository.GetBrandId(model.Id);
-            brand.Id = model.Id;
+            var brand = _repository.GetBrandbyId(brandId.Id);
+            brand.Id = brandId.Id;
 
             _repository.Delete(brand);
 
@@ -110,7 +124,7 @@ namespace ProductCatalog.Controllers
             {
                 Success = true,
                 Message = "Marca deletada com sucesso!",
-                Data = model
+                Data = ""
             };
         }
     }

@@ -8,6 +8,8 @@ using ProductCatalog.ViewModels.CategoryViewModels;
 
 namespace ProductCatalog.Controllers
 {
+    [Produces("application/json")]
+    [Route("v1/category")]
     public class CategoryController: Controller
     {
         private readonly CategoryRepository _repository;
@@ -18,8 +20,10 @@ namespace ProductCatalog.Controllers
         }
 
         //Read
-        [Route("v1/categories")]
         [HttpGet]
+        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public IEnumerable<ListCategoryViewModel> GetAllCategories()
         {
             return _repository.GetAllCategories();   
@@ -27,8 +31,10 @@ namespace ProductCatalog.Controllers
 
         //Read
         //Buscando o categoria por id
-        [Route("v1/categories/{id}")]
-        [HttpGet]
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public Category GetCategoryId(int id)
         {
             // Find() não funciona com AsNoTracking
@@ -38,18 +44,22 @@ namespace ProductCatalog.Controllers
 
         //Read
         //Buscando produtos por categoria
-        [Route("v1/categories/{id}/products")]
-        [HttpGet]
+        [HttpGet("{id}/products")]
+        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public IEnumerable<Product> GetProductsCategory(int id)
         {
             return _repository.GetProductsCategory(id);
         }
 
         //Create
-        [Route("v1/categories")]
         [HttpPost]
+        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         //[FromBody] está dizendo o parâmetro (category) será recebido do corpo da requisição
-        public ResultViewModel Post([FromBody]EditorCategoryViewModel model)
+        public ResultViewModel CreateCategory([FromBody]EditorCategoryViewModel model)
         {
             model.Validate();
             if(model.Invalid)
@@ -74,9 +84,11 @@ namespace ProductCatalog.Controllers
         }
 
         //Update
-        [Route("v1/categories")]
-        [HttpPut]
-        public ResultViewModel Put([FromBody]EditorCategoryViewModel model)
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(Brand), 202)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(409)]
+        public ResultViewModel UpdateCategory([FromRoute] EditorCategoryViewModel categoryId, [FromBody]EditorCategoryViewModel model)
         {
             model.Validate();
             if(model.Invalid)
@@ -87,7 +99,7 @@ namespace ProductCatalog.Controllers
                     Data = model.Notifications
                 };
             
-            var category = _repository.GetCategoryId(model.Id);
+            var category = _repository.GetCategoryId(categoryId.Id);
             category.Name = model.Name;
 
             _repository.Update(category);
@@ -101,9 +113,11 @@ namespace ProductCatalog.Controllers
         }
 
         //Delete
-        [Route("v1/categories")]
-        [HttpDelete]
-        public ResultViewModel Delete([FromBody]EditorCategoryViewModel model)
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(Brand), 204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public ResultViewModel Delete([FromRoute] EditorCategoryViewModel categoryId, [FromBody]EditorCategoryViewModel model)
         {
             if(model.Invalid)
                 return new ResultViewModel
@@ -113,8 +127,8 @@ namespace ProductCatalog.Controllers
                     Data = model.Notifications
                 };
 
-            var category = _repository.GetCategoryId(model.Id);
-            category.Id = model.Id;
+            var category = _repository.GetCategoryId(categoryId.Id);
+            category.Id = categoryId.Id;
 
             _repository.Delete(category);
 

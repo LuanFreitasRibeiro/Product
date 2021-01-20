@@ -21,7 +21,7 @@ namespace ProductCatalog.Data.Maps
             // aqui está sendo realizado o relacionamento 1:N
             // uma Category (Categoria) com muitos Products (Produtos)
             builder.HasOne(x => x.Category).WithMany(x => x.Products);
-            // builder.HasOne(x => x.Brand).WithMany(x => x.Products);
+            builder.HasOne(x => x.Brand).WithMany(x => x.Products);
         }
     }
 }
