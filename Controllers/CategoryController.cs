@@ -1,143 +1,94 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using ProductCatalog.Models;
-using ProductCatalog.Repositories;
-using ProductCatalog.ViewModels;
-using ProductCatalog.ViewModels.CategoryViewModels;
+using ProductCatalog.Application.Service.Abstraction;
+using ProductCatalog.Domain;
+using System;
+using System.Threading.Tasks;
 
 namespace ProductCatalog.Controllers
 {
     [Produces("application/json")]
     [Route("v1/category")]
-    public class CategoryController: Controller
+    public class CategoryController : Controller
     {
-        private readonly CategoryRepository _repository;
+        private readonly ICategoryService _categoryService;
 
-        public CategoryController(CategoryRepository repository)
+        public CategoryController(ICategoryService categoryService)
         {
-            _repository = repository;
+            _categoryService = categoryService;
+        }
+        //Create
+        [HttpPost]
+        [ProducesResponseType(typeof(Category), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> CreateCategory([FromBody] Category category)
+        {
+            try
+            {
+                var obj = await _categoryService.AddAsync(category);
+                return Created(nameof(GetCategoryBydId), obj);
+            }
+            catch (ArgumentNullException ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
 
         //Read
         [HttpGet]
-        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(typeof(Category), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public IEnumerable<ListCategoryViewModel> GetAllCategories()
+        public async Task<IActionResult> GetAllCategories()
         {
-            return _repository.GetAllCategories();   
+            return Ok(await _categoryService.GetAllCategoryAsync());
         }
 
-        //Read
-        //Buscando o categoria por id
-        [HttpGet("{id}")]
-        [ProducesResponseType(typeof(Brand), 200)]
+        ////Read
+        //Buscando as marcas por ID
+        [HttpGet]
+        [Route("{id}")]
+        [ProducesResponseType(typeof(Category), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public Category GetCategoryId(int id)
+        public async Task<IActionResult> GetCategoryBydId([FromRoute] Guid id)
         {
-            // Find() não funciona com AsNoTracking
-            // return _context.Categories.AsNoTracking().Where(x => x.Id == id).FirstOrDefault();
-            return _repository.GetCategoryId(id);
+            var obj = await _categoryService.GetCategoryByIdAsync(id);
+            if (obj == null)
+                return NotFound();
+
+            return Ok(obj);
         }
 
-        //Read
-        //Buscando produtos por categoria
-        [HttpGet("{id}/products")]
-        [ProducesResponseType(typeof(Brand), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(500)]
-        public IEnumerable<Product> GetProductsCategory(int id)
-        {
-            return _repository.GetProductsCategory(id);
-        }
-
-        //Create
-        [HttpPost]
-        [ProducesResponseType(typeof(Brand), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(500)]
-        //[FromBody] está dizendo o parâmetro (category) será recebido do corpo da requisição
-        public ResultViewModel CreateCategory([FromBody]EditorCategoryViewModel model)
-        {
-            model.Validate();
-            if(model.Invalid)
-                return new ResultViewModel
-                {
-                    Success = false,
-                    Message = "Não possível cadastrar o produto",
-                    Data = model.Notifications
-                };
-
-            var category = new Category();
-            category.Name = model.Name;
-
-            _repository.Save(category);
-
-            return new ResultViewModel
-            {
-                Success = true,
-                Message = "Categoria cadastrada com sucesso!",
-                Data = category
-            };
-        }
-
-        //Update
+        //Delete
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(Brand), 202)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(409)]
-        public ResultViewModel UpdateCategory([FromRoute] EditorCategoryViewModel categoryId, [FromBody]EditorCategoryViewModel model)
+        [ProducesResponseType(typeof(Category), 204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> UpdateCategoryAsync([FromRoute] Guid id, [FromBody] Category brand)
         {
-            model.Validate();
-            if(model.Invalid)
-                return new ResultViewModel
-                {
-                    Success = false,
-                    Message = "Não foi possível alterar a categoria",
-                    Data = model.Notifications
-                };
-            
-            var category = _repository.GetCategoryId(categoryId.Id);
-            category.Name = model.Name;
+            var obj = await _categoryService.GetCategoryByIdAsync(id);
+            if (obj == null)
+                return NotFound();
 
-            _repository.Update(category);
-
-            return new ResultViewModel
-            {
-                Success = true,
-                Message = "Categoria alterada com sucesso!",
-                Data = model
-            };
+            return Accepted(await _categoryService.UpdateCategoryAsync(id, brand));
         }
 
         //Delete
         [HttpDelete("{id}")]
-        [ProducesResponseType(typeof(Brand), 204)]
+        [ProducesResponseType(typeof(Category), 204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public ResultViewModel Delete([FromRoute] EditorCategoryViewModel categoryId, [FromBody]EditorCategoryViewModel model)
+        public async Task<IActionResult> DeleteBrandAsync([FromRoute] Guid id)
         {
-            if(model.Invalid)
-                return new ResultViewModel
-                {
-                    Success = false,
-                    Message = "Não foi possível deletar a categoria",
-                    Data = model.Notifications
-                };
+            var obj = await _categoryService.GetCategoryByIdAsync(id);
+            if (obj == null)
+                return NotFound();
 
-            var category = _repository.GetCategoryId(categoryId.Id);
-            category.Id = categoryId.Id;
+            await _categoryService.DeleteCategoryAsync(id);
 
-            _repository.Delete(category);
-
-            return new ResultViewModel
-            {
-                Success = true,
-                Message = "Categoria deletada com sucesso!",
-                Data = model
-            };
+            return NoContent();
         }
     }
 }

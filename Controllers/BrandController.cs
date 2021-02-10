@@ -1,9 +1,8 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using ProductCatalog.Models;
-using ProductCatalog.Repositories;
-using ProductCatalog.ViewModels;
-using ProductCatalog.ViewModels.BrandsViewModels;
+using ProductCatalog.Application.Service.Abstraction;
+using ProductCatalog.Domain;
+using System;
+using System.Threading.Tasks;
 
 namespace ProductCatalog.Controllers
 {
@@ -11,43 +10,11 @@ namespace ProductCatalog.Controllers
     [Route("v1/brands")]
     public class BrandController : Controller
     {
-        private readonly BrandRepository _repository;
+        private readonly IBrandService _brandService;
 
-        public BrandController(BrandRepository repository)
+        public BrandController(IBrandService brandService)
         {
-            _repository = repository;    
-        }
-
-        //Read
-        [HttpGet]
-        [ProducesResponseType(typeof(Brand), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(500)]
-        public IEnumerable<ListBrandViewModel> GetAllBrands()
-        {
-            return _repository.GetAllBrands();
-        }
-
-        //Read
-        //Buscando as marcas por ID
-        [HttpGet("{id}")]
-        [ProducesResponseType(typeof(Brand), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(500)]
-        public Brand GetBranBydId(int id)
-        {
-            return _repository.GetBrandbyId(id);
-        }
-
-        //Read
-        //Buscando produtos por marca
-        [HttpGet("{id}/products")]
-        [ProducesResponseType(typeof(Brand), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(500)]
-        public IEnumerable<Product> GetProductsBrand(int id)
-        {
-            return _repository.GetProductsBrand(id);
+            _brandService = brandService;    
         }
 
         //Create
@@ -55,57 +22,57 @@ namespace ProductCatalog.Controllers
         [ProducesResponseType(typeof(Brand), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public ResultViewModel CreateBrand([FromBody]EditorBrandViewModel model)
+        public async Task<IActionResult> CreateBrand([FromBody] Brand brand)
         {
-            model.Validate();
-            if(model.Invalid)
-                return new ResultViewModel
-                {
-                    Success = false,
-                    Message = "Não foi possível cadastrar a marca",
-                    Data = model.Notifications
-                };
-
-            var brand = new Brand();
-            brand.Name = model.Name;
-
-            _repository.Save(brand);
-
-            return new ResultViewModel
+            try
             {
-                Success = true,
-                Message = "Marca cadastrada com sucesso!",
-                Data = model
-            };
+                var obj = await _brandService.AddAsync(brand);
+                return Created(nameof(GetBranBydId), obj);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        //Update
-        [HttpPut("{Id}")]
-        [ProducesResponseType(typeof(Brand), 202)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(409)]
-        public ResultViewModel UpdateBrand([FromRoute] EditorBrandViewModel brandId, [FromBody]EditorBrandViewModel model)
+        //Read
+        [HttpGet]
+        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> GetAllBrands()
         {
-            model.Validate();
-            if(model.Invalid)
-                return new ResultViewModel
-                {
-                    Success = false,
-                    Message = "Não foi possível alterar a marca",
-                    Data = model.Notifications
-                };
+            return Ok(await _brandService.GetAllBrandAsync());
+        }
 
-            var brand = _repository.GetBrandbyId(brandId.Id);
-            brand.Name = model.Name;
+        ////Read
+        //Buscando as marcas por ID
+        [HttpGet]
+        [Route("{id}")]
+        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> GetBranBydId([FromRoute]Guid id)
+        {
+            var obj = await _brandService.GetBrandByIdAsync(id);
+            if (obj == null)
+                return NotFound();
 
-            _repository.Update(brand);
+            return Ok(obj);
+        }
 
-            return new ResultViewModel
-            {
-                Success = true,
-                Message = "Marca alterada com sucesso!",
-                Data = model
-            };
+        //Delete
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(Brand), 204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> UpdateBrandAsync([FromRoute] Guid id, [FromBody] Brand brand)
+        {
+            var obj = await _brandService.GetBrandByIdAsync(id);
+            if (obj == null)
+                return NotFound();
+
+            return Accepted(await _brandService.UpdateBrandAsync(id, brand));
         }
 
         //Delete
@@ -113,19 +80,15 @@ namespace ProductCatalog.Controllers
         [ProducesResponseType(typeof(Brand), 204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public ResultViewModel Delete([FromRoute] EditorBrandViewModel brandId)
+        public async Task<IActionResult> DeleteBrandAsync([FromRoute] Guid id)
         {
-            var brand = _repository.GetBrandbyId(brandId.Id);
-            brand.Id = brandId.Id;
+            var obj = await _brandService.GetBrandByIdAsync(id);
+            if (obj == null)
+                return NotFound();
 
-            _repository.Delete(brand);
+            await _brandService.DeleteBrandAsync(id);
 
-            return new ResultViewModel
-            {
-                Success = true,
-                Message = "Marca deletada com sucesso!",
-                Data = ""
-            };
+            return NoContent();
         }
     }
 }

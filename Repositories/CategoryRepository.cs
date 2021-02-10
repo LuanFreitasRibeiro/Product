@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ProductCatalog.Data;
-using ProductCatalog.Models;
 using ProductCatalog.ViewModels.CategoryViewModels;
+using ProductCatalog_Domain;
 
 namespace ProductCatalog.Repositories
 {

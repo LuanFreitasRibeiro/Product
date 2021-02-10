@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ProductCatalog.Data.Maps;
-using ProductCatalog.Models;
+using ProductCatalog_Domain;
 
 //O StoreDataContext.cs é a representação do banco de dados em memória
 

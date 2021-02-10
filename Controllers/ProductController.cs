@@ -1,135 +1,97 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using ProductCatalog.Models;
-using ProductCatalog.Repositories;
-using ProductCatalog.ViewModels;
-using ProductCatalog.ViewModels.ProductViewModels;
+using ProductCatalog.Application.Service.Abstraction;
+using ProductCatalog.Domain;
+using System;
+using System.Threading.Tasks;
 
 namespace ProductCatalog.Controllers
 {
-    [Route("v1/product")]
     [Produces("application/json")]
+    [Route("v1/product")]
     public class ProductController : Controller
     {
-        private readonly ProductRepository _repository;
+        private readonly IProductService _productService;
 
-        public ProductController(ProductRepository repository)
+        public ProductController(IProductService productService)
         {
-            _repository = repository;
-        }
-
-        //Read 
-        [HttpGet]
-        [ProducesResponseType(typeof(Brand), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(500)]
-        public IEnumerable<ListProductViewModel> GetAllProducts()
-        {
-            return _repository.GetAllProducts();
-        }
-
-        //Read
-        [HttpGet("{id}")]
-        [ProducesResponseType(typeof(Brand), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(500)]
-        public Product GetProductsId(int id)
-        {
-            return _repository.GetProductsId(id);
+            _productService = productService;
         }
 
         //Create
         [HttpPost]
-        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(typeof(Product), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public ResultViewModel Post([FromBody]EditorProductViewModel model)
+        public async Task<IActionResult> CreateProduct([FromBody] Product product)
         {
-            model.Validate();
-            if(model.Invalid)
-                return new ResultViewModel
-                {
-                    Success = false,
-                    Message = "Não foi possível cadastrar o produto",
-                    Data = model.Notifications
-                };
-
-            var product = new Product();
-            product.Name = model.Name;
-            product.CategoryId = model.CategoryId;
-            product.CreateDate = DateTime.Now;
-            product.Description = model.Description;
-            product.Image = model.Image;
-            product.LastUpdateDate = DateTime.Now;
-            product.Price = model.Price;
-            product.Quantity = model.Quantity;
-            product.BrandId = model.BrandId;
-
-            _repository.Save(product);
-
-            return new ResultViewModel
+            try
             {
-                Success = true,
-                Message = "Produto cadastrado com sucesso!",
-                Data = product
-            };
+                if (product == null)
+                    return BadRequest();
+
+                var obj = await _productService.AddAsync(product);
+                return Created(nameof(GetProductBydId), obj);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        //Update
-        [HttpPut("{Id}")]
-        [ProducesResponseType(typeof(Brand), 202)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(409)]
-        public ResultViewModel Put([FromRoute] EditorProductViewModel categoryId, [FromBody]EditorProductViewModel model)
+        //Read
+        [HttpGet]
+        [ProducesResponseType(typeof(Product), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> GetAllProducts()
         {
-            model.Validate();
-            if(model.Invalid)
-                return new ResultViewModel
-                {
-                    Success = false,
-                    Message = "Não foi possível alterar o produto",
-                    Data = model.Notifications
-                };
-            
-            var product = _repository.GetProductsId(categoryId.Id);
-            product.Name = model.Name;
-            product.CategoryId = model.CategoryId;
-            product.Description = model.Description;
-            product.Image = model.Image;
-            product.LastUpdateDate = DateTime.Now;
-            product.Price = model.Price;
-            product.Quantity = model.Quantity;
-            product.BrandId = model.BrandId;
+            return Ok(await _productService.GetAllProductAsync());
+        }
 
-            _repository.Update(product);
+        ////Read
+        //Buscando as marcas por ID
+        [HttpGet]
+        [Route("{id}")]
+        [ProducesResponseType(typeof(Product), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> GetProductBydId([FromRoute] Guid id)
+        {
+            var obj = await _productService.GetProductByIdAsync(id);
+            if (obj == null)
+                return NotFound();
 
-            return new ResultViewModel
-            {
-                Success = true,
-                Message = "Produto alterado com sucesso!",
-                Data = product
-            };
+            return Ok(obj);
+        }
+
+        //Delete
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(Product), 204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> UpdateBrandAsync([FromRoute] Guid id, [FromBody] Product product)
+        {
+            var obj = await _productService.GetProductByIdAsync(id);
+            if (obj == null)
+                return NotFound();
+
+            return Accepted(await _productService.UpdateProductAsync(id, product));
         }
 
         //Delete
         [HttpDelete("{id}")]
-        [ProducesResponseType(typeof(Brand), 204)]
+        [ProducesResponseType(typeof(Product), 204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public ResultViewModel Delete([FromRoute]EditorProductViewModel categoryId)
+        public async Task<IActionResult> DeleteBrandAsync([FromRoute] Guid id)
         {
-            var product = _repository.GetProductsId(categoryId.Id);
-            product.Id = categoryId.Id;
+            var obj = await _productService.GetProductByIdAsync(id);
+            if (obj == null)
+                return NotFound();
 
-            _repository.Delete(product);
+            await _productService.DeleteProductAsync(id);
 
-            return new ResultViewModel
-            {
-                Success = true,
-                Message = "Produto deletado com sucesso!",
-                Data = ""
-            };
+            return NoContent();
         }
     }
 }
