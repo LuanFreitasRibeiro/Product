@@ -1,19 +1,50 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ProductCatalog.Data;
-using ProductCatalog.Models;
+using ProductCatalog.Repositories.Abstraction;
 using ProductCatalog.ViewModels.BrandsViewModels;
+using ProductCatalog_Domain;
 
 namespace ProductCatalog.Repositories
 {
-    public class BrandRepository
+    public class BrandRepository : IBrandRepository
     {
         private readonly StoreDataContext _context;
 
         public BrandRepository(StoreDataContext context)
         {
             _context = context;
+        }
+        public async Task AddAsync(Brand brand)
+        {
+            await _context.Brands.AddAsync(brand);
+            await _context.SaveChangesAsync();
+
+        }
+
+        public async Task<Brand> GetBrandByIdAsync(Guid id)
+        {
+            return await _context.Brands.FindAsync(id);
+        }
+
+        public async Task<IEnumerable<Brand>> GetAllBrandAsync()
+        {
+            return await _context.Brands
+                                 .AsQueryable()
+                                 .ToListAsync();
+        }
+
+        public async Task DeleteBrandAsync(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task UpdateBrandAsync(Brand id)
+        {
+            throw new NotImplementedException();
         }
 
         public IEnumerable<ListBrandViewModel> GetAllBrands()

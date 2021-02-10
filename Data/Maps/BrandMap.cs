@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ProductCatalog.Models;
+using ProductCatalog_Domain;
 
 namespace ProductCatalog.Data.Maps
 {
