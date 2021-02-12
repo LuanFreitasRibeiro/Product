@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Data\**" />
+    <Compile Remove="ProductCatagalog.Data\**" />
+    <Compile Remove="ProductCatalog.Application\**" />
+    <Compile Remove="ProductCatalog.Domain\**" />
+    <Compile Remove="ProductCatalog.Repository\**" />
+    <Compile Remove="Repositories\**" />
+    <Compile Remove="ViewModels\**" />
+    <Content Remove="Data\**" />
+    <Content Remove="ProductCatagalog.Data\**" />
+    <Content Remove="ProductCatalog.Application\**" />
+    <Content Remove="ProductCatalog.Domain\**" />
+    <Content Remove="ProductCatalog.Repository\**" />
+    <Content Remove="Repositories\**" />
+    <Content Remove="ViewModels\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <EmbeddedResource Remove="ProductCatagalog.Data\**" />
+    <EmbeddedResource Remove="ProductCatalog.Application\**" />
+    <EmbeddedResource Remove="ProductCatalog.Domain\**" />
+    <EmbeddedResource Remove="ProductCatalog.Repository\**" />
+    <EmbeddedResource Remove="Repositories\**" />
+    <EmbeddedResource Remove="ViewModels\**" />
+    <None Remove="Data\**" />
+    <None Remove="ProductCatagalog.Data\**" />
+    <None Remove="ProductCatalog.Application\**" />
+    <None Remove="ProductCatalog.Domain\**" />
+    <None Remove="ProductCatalog.Repository\**" />
+    <None Remove="Repositories\**" />
+    <None Remove="ViewModels\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Flunt" Version="1.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="2.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="ProductCatalog.Application\ProductCatalog.Application.csproj" />
+    <ProjectReference Include="ProductCatalog.Domain\ProductCatalog.Domain.csproj" />
+  </ItemGroup>
+</Project>
