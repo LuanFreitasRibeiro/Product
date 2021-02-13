@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
+using ProductCatalog.ViewModels.ProductViewModels;
 using System;
 using System.Threading.Tasks;
 
@@ -64,12 +65,11 @@ namespace ProductCatalog.Controllers
             return Ok(obj);
         }
 
-        //Delete
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(Product), 204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> UpdateBrandAsync([FromRoute] Guid id, [FromBody] Product product)
+        public async Task<IActionResult> UpdateBrandAsync([FromRoute] Guid id, [FromBody] EditorProductViewModel product)
         {
             var obj = await _productService.GetProductByIdAsync(id);
             if (obj == null)

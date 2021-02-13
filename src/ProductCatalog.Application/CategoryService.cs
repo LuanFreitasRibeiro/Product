@@ -2,6 +2,7 @@
 using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
 using ProductCatalog.Repository.Abstraction;
+using ProductCatalog.ViewModels.CategoryViewModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -48,7 +49,7 @@ namespace ProductCatalog.Application.Service
             await _categoryRepository.DeleteCategoryAsync(id);
         }
 
-        public async Task<Category> UpdateCategoryAsync(Guid id, Category category)
+        public async Task<Category> UpdateCategoryAsync(Guid id, EditorCategoryViewModel category)
         {
             try
             {

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
+using ProductCatalog.ViewModels.BrandsViewModels;
 using System;
 using System.Threading.Tasks;
 
@@ -62,11 +63,11 @@ namespace ProductCatalog.Controllers
         }
 
         //Delete
-        [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         [ProducesResponseType(typeof(Brand), 204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> UpdateBrandAsync([FromRoute] Guid id, [FromBody] Brand brand)
+        public async Task<IActionResult> UpdateBrandAsync([FromRoute] Guid id, [FromBody] EditorBrandViewModel brand)
         {
             var obj = await _brandService.GetBrandByIdAsync(id);
             if (obj == null)
