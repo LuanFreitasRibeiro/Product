@@ -45,7 +45,8 @@ namespace ProductCatalog.Repository
 
         public async Task<Brand> GetBrandByIdAsync(Guid id)
         {
-            return await _context.Brands.FindAsync(id);
+            var result = await _context.Brands.Where(x => x.Id == id).AsNoTracking().FirstAsync();
+            return result;
         }
 
         public async Task UpdateBrandAsync(Brand brand)

@@ -5,7 +5,6 @@ namespace ProductCatalog.ViewModels.BrandsViewModels
 {
     public class EditorBrandViewModel : Notifiable, IValidatable
     {
-        public int Id { get; set; }
         public string Name { get; set; }
 
         public void Validate()

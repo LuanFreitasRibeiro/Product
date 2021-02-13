@@ -1,6 +1,7 @@
 ﻿using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
 using ProductCatalog.Repository.Abstraction;
+using ProductCatalog.ViewModels.ProductViewModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -59,11 +60,11 @@ namespace ProductCatalog.Application.Service
             await _productRepository.DeleteProductAync(id);
         }
 
-        public async Task<Product> UpdateProductAsync(Guid id, Product product)
+        public async Task<Product> UpdateProductAsync(Guid id, EditorProductViewModel product)
         {
             var obj = new Product()
             {
-                Id = Guid.NewGuid(),
+                Id = id,
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,

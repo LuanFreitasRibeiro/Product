@@ -18,7 +18,7 @@ namespace ProductCatalog
             services.AddMvc();
             services.AddResponseCompression();
 
-            services.AddTransient<StoreDataContext, StoreDataContext>();
+            services.AddScoped<StoreDataContext, StoreDataContext>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IBrandRepository, BrandRepository>();

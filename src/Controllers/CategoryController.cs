@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
+using ProductCatalog.ViewModels.CategoryViewModels;
 using System;
 using System.Threading.Tasks;
 
@@ -66,7 +67,7 @@ namespace ProductCatalog.Controllers
         [ProducesResponseType(typeof(Category), 204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> UpdateCategoryAsync([FromRoute] Guid id, [FromBody] Category brand)
+        public async Task<IActionResult> UpdateCategoryAsync([FromRoute] Guid id, [FromBody] EditorCategoryViewModel brand)
         {
             var obj = await _categoryService.GetCategoryByIdAsync(id);
             if (obj == null)

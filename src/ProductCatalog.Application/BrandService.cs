@@ -1,6 +1,7 @@
 ﻿using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
 using ProductCatalog.Repository.Abstraction;
+using ProductCatalog.ViewModels.BrandsViewModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -47,7 +48,7 @@ namespace ProductCatalog.Application.Service
             await _brandRepository.DeleteBrandAsync(id);
         }
 
-        public async Task<Brand> UpdateBrandAsync(Guid id, Brand brand)
+        public async Task<Brand> UpdateBrandAsync(Guid id, EditorBrandViewModel brand)
         {
             try
             {
@@ -60,10 +61,9 @@ namespace ProductCatalog.Application.Service
                 await _brandRepository.UpdateBrandAsync(obj);
                 return await _brandRepository.GetBrandByIdAsync(obj.Id);
             }
-            catch (Exception ex)
+            catch (ArgumentNullException ex)
             {
-
-                throw;
+                throw new ArgumentNullException("An error has occurred");
             }
         }
     }

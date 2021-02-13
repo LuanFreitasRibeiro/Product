@@ -56,7 +56,7 @@ namespace ProductCatalog.Repository
 
         public async Task<Product> GetProductByIdAsync(Guid id)
         {
-            return await _context.Products.FindAsync(id);
+            return await _context.Products.Where(x => x.Id == id).AsNoTracking().FirstAsync();
         }
 
         public async Task DeleteProductAync(Guid id)
@@ -76,8 +76,15 @@ namespace ProductCatalog.Repository
 
         public async Task UpdateProductAsync(Product product)
         {
-            _context.Entry<Product>(product).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Entry<Product>(product).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error has occurred");
+            }
         }
     }
 }
