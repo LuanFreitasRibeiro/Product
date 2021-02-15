@@ -45,7 +45,10 @@ namespace ProductCatalog.Repository
 
         public async Task<Category> GetCategoryByIdAsync(Guid id)
         {
-            return await _context.Categories.Where(x => x.Id == id).AsNoTracking().FirstAsync();
+            return await _context.Categories
+                .Where(x => x.Id == id)
+                .AsNoTracking()
+                .FirstAsync();
         }
 
         public async Task UpdateCategoryAsync(Category category)
