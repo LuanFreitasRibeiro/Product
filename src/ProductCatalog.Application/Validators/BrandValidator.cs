@@ -1,10 +1,7 @@
-﻿using ProductCatalog.Application.Service.Abstraction;
-using ProductCatalog.Data;
+﻿using ProductCatalog.Data;
 using ProductCatalog.Domain;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ProductCatalog.Application.Validators
 {
@@ -21,19 +18,25 @@ namespace ProductCatalog.Application.Validators
             _context = context;
         }
 
+        public void Validate(Brand brand)
+        {
+            ValidateIfNameIsNullOrEmpty(brand);
+            ValidateIfNameExists(brand);
+        }
+
         public void ValidateIfNameIsNullOrEmpty(Brand brand)
         {
             if (string.IsNullOrWhiteSpace(brand.Name))
             {
-                throw new ArgumentNullException(brand.Name, "Value cannot be null");
+                throw new ArgumentNullException(brand.Name, "Value cannot be null.");
             }
         }
 
         public void ValidateIfNameExists(Brand brand)
         {
-            var result = _context.Brands.Where(x => x.Name == brand.Name);
+            var result = _context.Brands.Any(x => x.Name == brand.Name);
 
-            if(result != null)
+            if (result == true)
             {
                 throw new ArgumentNullException(brand.Name, "You already have brand with this name.");
             }

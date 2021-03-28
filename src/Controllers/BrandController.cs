@@ -13,12 +13,14 @@ namespace ProductCatalog.Controllers
     {
         private readonly IBrandService _brandService;
 
+        #region Constructor
         public BrandController(IBrandService brandService)
         {
-            _brandService = brandService;    
+            _brandService = brandService;
         }
+        #endregion
 
-        //Create
+        #region Create Brand
         [HttpPost]
         [ProducesResponseType(typeof(Brand), 200)]
         [ProducesResponseType(400)]
@@ -35,8 +37,9 @@ namespace ProductCatalog.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        #endregion
 
-        //Read
+        #region Get All Brands
         [HttpGet]
         [ProducesResponseType(typeof(Brand), 200)]
         [ProducesResponseType(400)]
@@ -45,15 +48,15 @@ namespace ProductCatalog.Controllers
         {
             return Ok(await _brandService.GetAllBrandAsync());
         }
+        #endregion
 
-        ////Read
-        //Buscando as marcas por ID
+        #region Get Brand By Id
         [HttpGet]
         [Route("{id}")]
         [ProducesResponseType(typeof(Brand), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> GetBranBydId([FromRoute]Guid id)
+        public async Task<IActionResult> GetBranBydId([FromRoute] Guid id)
         {
             var obj = await _brandService.GetBrandByIdAsync(id);
             if (obj == null)
@@ -61,8 +64,9 @@ namespace ProductCatalog.Controllers
 
             return Ok(obj);
         }
+        #endregion
 
-        //Delete
+        #region Update Brand Async
         [HttpPatch("{id}")]
         [ProducesResponseType(typeof(Brand), 204)]
         [ProducesResponseType(400)]
@@ -75,8 +79,9 @@ namespace ProductCatalog.Controllers
 
             return Accepted(await _brandService.UpdateBrandAsync(id, brand));
         }
+        #endregion
 
-        //Delete
+        #region Delete Brand Async
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(Brand), 204)]
         [ProducesResponseType(400)]
@@ -91,5 +96,6 @@ namespace ProductCatalog.Controllers
 
             return NoContent();
         }
+        #endregion
     }
 }

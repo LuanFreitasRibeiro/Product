@@ -22,8 +22,7 @@ namespace ProductCatalog.Application.Service
 
         public async Task<Brand> AddAsync(Brand brand)
         {
-            _brandValidator.ValidateIfNameIsNullOrEmpty(brand);
-            //_brandValidator.ValidateIfNameExists(brand);
+            _brandValidator.Validate(brand);
 
             var obj = new Brand()
             {
