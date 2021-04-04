@@ -56,7 +56,10 @@ namespace ProductCatalog.Repository
 
         public async Task<Product> GetProductByIdAsync(Guid id)
         {
-            return await _context.Products.Where(x => x.Id == id).AsNoTracking().FirstAsync();
+            return await _context.Products
+                .Where(x => x.Id == id)
+                .AsNoTracking()
+                .FirstAsync();
         }
 
         public async Task DeleteProductAync(Guid id)

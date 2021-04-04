@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using ProductCatalog.Application.Service;
 using ProductCatalog.Application.Service.Abstraction;
+using ProductCatalog.Application.Validators;
 using ProductCatalog.Data;
 using ProductCatalog.Repository;
 using ProductCatalog.Repository.Abstraction;
@@ -19,6 +20,7 @@ namespace ProductCatalog
             services.AddResponseCompression();
 
             services.AddScoped<StoreDataContext, StoreDataContext>();
+            services.AddScoped<BrandValidator, BrandValidator>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IBrandRepository, BrandRepository>();
