@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
@@ -13,15 +14,19 @@ namespace ProductCatalog.Controllers
     {
         private readonly ICategoryService _categoryService;
 
+        #region Constructor
         public CategoryController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
         }
-        //Create
+        #endregion
+
+        #region Create Category
         [HttpPost]
         [ProducesResponseType(typeof(Category), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
+        [Authorize]
         public async Task<IActionResult> CreateCategory([FromBody] Category category)
         {
             try
@@ -35,24 +40,26 @@ namespace ProductCatalog.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        #endregion
 
-        //Read
+        #region Get Caregories
         [HttpGet]
         [ProducesResponseType(typeof(Category), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
+        [Authorize]
         public async Task<IActionResult> GetAllCategories()
         {
             return Ok(await _categoryService.GetAllCategoryAsync());
         }
+        #endregion
 
-        ////Read
-        //Buscando as marcas por ID
-        [HttpGet]
-        [Route("{id}")]
+        #region Get Cateogiries By Id
+        [HttpGet("{id}")]
         [ProducesResponseType(typeof(Category), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
+        [Authorize]
         public async Task<IActionResult> GetCategoryBydId([FromRoute] Guid id)
         {
             var obj = await _categoryService.GetCategoryByIdAsync(id);
@@ -61,12 +68,14 @@ namespace ProductCatalog.Controllers
 
             return Ok(obj);
         }
+        #endregion
 
-        //Delete
+        #region Update Category
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(Category), 204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
+        [Authorize]
         public async Task<IActionResult> UpdateCategoryAsync([FromRoute] Guid id, [FromBody] EditorCategoryViewModel brand)
         {
             var obj = await _categoryService.GetCategoryByIdAsync(id);
@@ -75,13 +84,15 @@ namespace ProductCatalog.Controllers
 
             return Accepted(await _categoryService.UpdateCategoryAsync(id, brand));
         }
+        #endregion
 
-        //Delete
+        #region Delete Category
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(Category), 204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> DeleteBrandAsync([FromRoute] Guid id)
+        [Authorize]
+        public async Task<IActionResult> DeleteCategoryAsync([FromRoute] Guid id)
         {
             var obj = await _categoryService.GetCategoryByIdAsync(id);
             if (obj == null)
@@ -91,5 +102,6 @@ namespace ProductCatalog.Controllers
 
             return NoContent();
         }
+        #endregion
     }
 }

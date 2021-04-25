@@ -1,13 +1,22 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using ProductCatalog.Application;
+using ProductCatalog.Application.Interfaces;
 using ProductCatalog.Application.Service;
 using ProductCatalog.Application.Service.Abstraction;
+using ProductCatalog.Application.Settings;
 using ProductCatalog.Application.Validators;
 using ProductCatalog.Data;
 using ProductCatalog.Repository;
 using ProductCatalog.Repository.Abstraction;
-using Swashbuckle.AspNetCore.Swagger;
+using ProductCatalog.Repository.Interfaces;
+using System.Linq;
+using System.Text;
 
 namespace ProductCatalog
 {
@@ -16,8 +25,32 @@ namespace ProductCatalog
         public void ConfigureServices(IServiceCollection services)
         {
             //Middlewares
-            services.AddMvc();
-            services.AddResponseCompression();
+            services.AddCors();
+            services.AddResponseCompression(options =>
+            {
+                options.Providers.Add<GzipCompressionProvider>();
+                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/json" });
+            });
+
+            services.AddControllers();
+
+            var key = Encoding.ASCII.GetBytes(Settings.Secret);
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x => 
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
 
             services.AddScoped<StoreDataContext, StoreDataContext>();
             services.AddScoped<BrandValidator, BrandValidator>();
@@ -27,9 +60,11 @@ namespace ProductCatalog
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IBrandService, BrandService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddSwaggerGen(x => {
-                x.SwaggerDoc("v1", new Info { Title = "Store Catalog", Version="v1" });
+                x.SwaggerDoc("v1", new OpenApiInfo { Title = "Store Catalog", Version="v1" });
             });
         }
 
@@ -39,12 +74,25 @@ namespace ProductCatalog
                 app.UseDeveloperExceptionPage();
 
             //Middlewares
-            app.UseMvc();
             app.UseResponseCompression();
-            
+
+            app.UseRouting();
+
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseSwagger();
             app.UseSwaggerUI(c => {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Store Catalog");
+            });
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
             });
         }
     }
