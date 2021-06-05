@@ -1,3 +1,9 @@
+```
+#!text
+Please use the following template to submit your pull request. 
+DO NOT FORGET TO REMOVE THIS BLOCK
+```
+
 ![Git Merge](https://media.giphy.com/media/cFkiFMDg3iFoI/giphy.gif)
 
 ### Status
@@ -18,7 +24,6 @@ How did you solve the problem? What are the main flows? Any technical informatio
 
 ### Attachments (if appropriate)
 
-[ML-255](https://mundipagg.atlassian.net/browse/ML-255)
 
 ### Definition of Done:
 - [ ] Increases API documentation
