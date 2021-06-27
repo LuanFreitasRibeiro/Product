@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
+using ProductCatalog.Domain.Request.Product;
 using ProductCatalog.ViewModels.ProductViewModels;
 using System;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace ProductCatalog.Controllers
         [ProducesResponseType(typeof(Product), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> CreateProduct([FromBody] Product product)
+        public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest product)
         {
             try
             {

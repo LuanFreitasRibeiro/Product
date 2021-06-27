@@ -10,4 +10,8 @@
     <PackageReference Include="Flunt" Version="1.0.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Request\Product\CreateProductRequest.cs" />
+  </ItemGroup>
+
 </Project>

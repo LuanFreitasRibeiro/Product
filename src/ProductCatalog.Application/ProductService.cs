@@ -1,5 +1,6 @@
 ﻿using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
+using ProductCatalog.Domain.Request.Product;
 using ProductCatalog.Repository.Abstraction;
 using ProductCatalog.ViewModels.ProductViewModels;
 using System;
@@ -17,7 +18,7 @@ namespace ProductCatalog.Application.Service
             _productRepository = productRepository;
         }
 
-        public async Task<Product> AddAsync(Product product)
+        public async Task<Product> AddAsync(CreateProductRequest product)
         {
             try
             {
