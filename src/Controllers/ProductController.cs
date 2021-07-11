@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
 using ProductCatalog.Domain.Request.Product;
-using ProductCatalog.ViewModels.ProductViewModels;
 using System;
 using System.Threading.Tasks;
 
@@ -80,7 +79,7 @@ namespace ProductCatalog.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
-        public async Task<IActionResult> UpdateProductAsync([FromRoute] Guid id, [FromBody] EditorProductViewModel product)
+        public async Task<IActionResult> UpdateProductAsync([FromRoute] Guid id, [FromBody] UpdateProductRequest product)
         {
             var obj = await _productService.GetProductByIdAsync(id);
             if (obj == null)

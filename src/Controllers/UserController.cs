@@ -5,6 +5,7 @@ using ProductCatalog.Application;
 using ProductCatalog.Application.Interfaces;
 using ProductCatalog.Data;
 using ProductCatalog.Domain;
+using ProductCatalog.Domain.Request.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,7 +61,7 @@ namespace ProductCatalog.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
-        public async Task<IActionResult> CreateUser([FromBody] User model)
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

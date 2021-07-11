@@ -1,6 +1,5 @@
 ﻿using ProductCatalog.Domain;
 using ProductCatalog.Domain.Request.Product;
-using ProductCatalog.Domain.Response.Product;
 
 namespace ProductCatalog.Profiles
 {

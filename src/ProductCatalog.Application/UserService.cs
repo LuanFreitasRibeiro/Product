@@ -1,5 +1,6 @@
 ﻿using ProductCatalog.Application.Interfaces;
 using ProductCatalog.Domain;
+using ProductCatalog.Domain.Request.User;
 using ProductCatalog.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace ProductCatalog.Application
             _userRepository = userRepository;
         }
 
-        public async Task<User> CreateUser(User user)
+        public async Task<User> CreateUser(CreateUserRequest user)
         {
             var obj = new User()
             {

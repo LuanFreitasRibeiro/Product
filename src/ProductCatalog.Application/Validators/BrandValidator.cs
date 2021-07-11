@@ -1,5 +1,6 @@
 ﻿using ProductCatalog.Data;
 using ProductCatalog.Domain;
+using ProductCatalog.Domain.Request.Brand;
 using System;
 using System.Linq;
 
@@ -18,13 +19,13 @@ namespace ProductCatalog.Application.Validators
             _context = context;
         }
 
-        public void Validate(Brand brand)
+        public void Validate(CreateBrandRequest brand)
         {
             ValidateIfNameIsNullOrEmpty(brand);
             ValidateIfNameExists(brand);
         }
 
-        public void ValidateIfNameIsNullOrEmpty(Brand brand)
+        public void ValidateIfNameIsNullOrEmpty(CreateBrandRequest brand)
         {
             if (string.IsNullOrWhiteSpace(brand.Name))
             {
@@ -32,7 +33,7 @@ namespace ProductCatalog.Application.Validators
             }
         }
 
-        public void ValidateIfNameExists(Brand brand)
+        public void ValidateIfNameExists(CreateBrandRequest brand)
         {
             var result = _context.Brands.Any(x => x.Name == brand.Name);
 

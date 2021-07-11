@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ProductCatalog.Application.Service.Abstraction;
+﻿using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
+using ProductCatalog.Domain.Request.Category;
 using ProductCatalog.Repository.Abstraction;
-using ProductCatalog.ViewModels.CategoryViewModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,7 +17,7 @@ namespace ProductCatalog.Application.Service
             _categoryRepository = categoryRepository;
         }
 
-        public async Task<Category> AddAsync(Category category)
+        public async Task<Category> AddAsync(CreateCategoryRequest category)
         {
             if (string.IsNullOrEmpty(category.Name))
             {
@@ -49,7 +48,7 @@ namespace ProductCatalog.Application.Service
             await _categoryRepository.DeleteCategoryAsync(id);
         }
 
-        public async Task<Category> UpdateCategoryAsync(Guid id, EditorCategoryViewModel category)
+        public async Task<Category> UpdateCategoryAsync(Guid id, UpdateCategoryRequest category)
         {
             try
             {

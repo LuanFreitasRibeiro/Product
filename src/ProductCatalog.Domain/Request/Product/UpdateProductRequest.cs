@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ProductCatalog.Domain.Request.Product
 {
-    class UpdateProductRequest : ProductRequest
+    public class UpdateProductRequest : ProductRequest
     {
     }
 }
