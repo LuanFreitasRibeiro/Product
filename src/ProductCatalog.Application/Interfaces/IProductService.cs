@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ProductCatalog.Domain;
+﻿using ProductCatalog.Domain;
 using ProductCatalog.Domain.Request.Product;
-using ProductCatalog.Domain.Response.Product;
-using ProductCatalog.ViewModels.ProductViewModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,6 +12,6 @@ namespace ProductCatalog.Application.Service.Abstraction
         Task<Product> GetProductByIdAsync(Guid id);
         Task<IEnumerable<Product>> GetAllProductAsync();
         Task DeleteProductAsync(Guid id);
-        Task<Product> UpdateProductAsync(Guid id, EditorProductViewModel obj);
+        Task<Product> UpdateProductAsync(Guid id, UpdateProductRequest obj);
     }
 }

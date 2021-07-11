@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
-using ProductCatalog.ViewModels.CategoryViewModels;
+using ProductCatalog.Domain.Request.Category;
 using System;
 using System.Threading.Tasks;
 
@@ -27,7 +27,7 @@ namespace ProductCatalog.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
-        public async Task<IActionResult> CreateCategory([FromBody] Category category)
+        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequest category)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace ProductCatalog.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
-        public async Task<IActionResult> UpdateCategoryAsync([FromRoute] Guid id, [FromBody] EditorCategoryViewModel brand)
+        public async Task<IActionResult> UpdateCategoryAsync([FromRoute] Guid id, [FromBody] UpdateCategoryRequest brand)
         {
             var obj = await _categoryService.GetCategoryByIdAsync(id);
             if (obj == null)

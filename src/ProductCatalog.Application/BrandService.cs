@@ -1,8 +1,8 @@
 ﻿using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Application.Validators;
 using ProductCatalog.Domain;
+using ProductCatalog.Domain.Request.Brand;
 using ProductCatalog.Repository.Abstraction;
-using ProductCatalog.ViewModels.BrandsViewModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -20,7 +20,7 @@ namespace ProductCatalog.Application.Service
             _brandValidator = brandValidator;
         }
 
-        public async Task<Brand> AddAsync(Brand brand)
+        public async Task<Brand> AddAsync(CreateBrandRequest brand)
         {
             _brandValidator.Validate(brand);
 
@@ -48,7 +48,7 @@ namespace ProductCatalog.Application.Service
             await _brandRepository.DeleteBrandAsync(id);
         }
 
-        public async Task<Brand> UpdateBrandAsync(Guid id, EditorBrandViewModel brand)
+        public async Task<Brand> UpdateBrandAsync(Guid id, UpdateBrandRequest brand)
         {
             try
             {

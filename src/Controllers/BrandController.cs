@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
-using ProductCatalog.ViewModels.BrandsViewModels;
+using ProductCatalog.Domain.Request.Brand;
 using System;
 using System.Threading.Tasks;
 
@@ -27,7 +27,7 @@ namespace ProductCatalog.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
-        public async Task<IActionResult> CreateBrand([FromBody] Brand brand)
+        public async Task<IActionResult> CreateBrand([FromBody] CreateBrandRequest brand)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace ProductCatalog.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
-        public async Task<IActionResult> UpdateBrandAsync([FromRoute] Guid id, [FromBody] EditorBrandViewModel brand)
+        public async Task<IActionResult> UpdateBrandAsync([FromRoute] Guid id, [FromBody] UpdateBrandRequest brand)
         {
             var obj = await _brandService.GetBrandByIdAsync(id);
             if (obj == null)
