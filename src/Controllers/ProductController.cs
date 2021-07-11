@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
@@ -14,16 +15,19 @@ namespace ProductCatalog.Controllers
     {
         private readonly IProductService _productService;
 
+        #region Constructor
         public ProductController(IProductService productService)
         {
             _productService = productService;
         }
+        #endregion
 
-        //Create
+        #region Create Product
         [HttpPost]
         [ProducesResponseType(typeof(Product), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
+        [Authorize]
         public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest product)
         {
             try
@@ -39,24 +43,27 @@ namespace ProductCatalog.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        #endregion
 
-        //Read
+        #region Get Products
         [HttpGet]
         [ProducesResponseType(typeof(Product), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
+        [Authorize]
         public async Task<IActionResult> GetAllProducts()
         {
             return Ok(await _productService.GetAllProductAsync());
         }
+        #endregion
 
-        ////Read
-        //Buscando as marcas por ID
+        #region Get Product By Id
         [HttpGet]
         [Route("{id}")]
         [ProducesResponseType(typeof(Product), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
+        [Authorize]
         public async Task<IActionResult> GetProductBydId([FromRoute] Guid id)
         {
             var obj = await _productService.GetProductByIdAsync(id);
@@ -65,12 +72,15 @@ namespace ProductCatalog.Controllers
 
             return Ok(obj);
         }
+        #endregion
 
+        #region Update Product
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(Product), 204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> UpdateBrandAsync([FromRoute] Guid id, [FromBody] EditorProductViewModel product)
+        [Authorize]
+        public async Task<IActionResult> UpdateProductAsync([FromRoute] Guid id, [FromBody] EditorProductViewModel product)
         {
             var obj = await _productService.GetProductByIdAsync(id);
             if (obj == null)
@@ -78,13 +88,15 @@ namespace ProductCatalog.Controllers
 
             return Accepted(await _productService.UpdateProductAsync(id, product));
         }
+        #endregion
 
-        //Delete
+        #region MyRegion
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(Product), 204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> DeleteBrandAsync([FromRoute] Guid id)
+        [Authorize]
+        public async Task<IActionResult> DeleteProductAsync([FromRoute] Guid id)
         {
             var obj = await _productService.GetProductByIdAsync(id);
             if (obj == null)
@@ -94,5 +106,7 @@ namespace ProductCatalog.Controllers
 
             return NoContent();
         }
+        #endregion
+
     }
 }

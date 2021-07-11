@@ -1,5 +1,7 @@
-﻿using ProductCatalog.Domain;
+﻿using Microsoft.AspNetCore.Mvc;
+using ProductCatalog.Domain;
 using ProductCatalog.Domain.Request.Product;
+using ProductCatalog.Domain.Response.Product;
 using ProductCatalog.ViewModels.ProductViewModels;
 using System;
 using System.Collections.Generic;

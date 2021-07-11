@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
@@ -25,12 +26,13 @@ namespace ProductCatalog.Controllers
         [ProducesResponseType(typeof(Brand), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
+        [Authorize]
         public async Task<IActionResult> CreateBrand([FromBody] Brand brand)
         {
             try
             {
                 var obj = await _brandService.AddAsync(brand);
-                return Created(nameof(GetBranBydId), obj);
+                return Created(nameof(CreateBrand), obj);
             }
             catch (ArgumentNullException ex)
             {
@@ -44,6 +46,7 @@ namespace ProductCatalog.Controllers
         [ProducesResponseType(typeof(Brand), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
+        [Authorize]
         public async Task<IActionResult> GetAllBrands()
         {
             return Ok(await _brandService.GetAllBrandAsync());
@@ -56,6 +59,7 @@ namespace ProductCatalog.Controllers
         [ProducesResponseType(typeof(Brand), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
+        [Authorize]
         public async Task<IActionResult> GetBranBydId([FromRoute] Guid id)
         {
             var obj = await _brandService.GetBrandByIdAsync(id);
@@ -71,6 +75,7 @@ namespace ProductCatalog.Controllers
         [ProducesResponseType(typeof(Brand), 204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
+        [Authorize]
         public async Task<IActionResult> UpdateBrandAsync([FromRoute] Guid id, [FromBody] EditorBrandViewModel brand)
         {
             var obj = await _brandService.GetBrandByIdAsync(id);
@@ -86,6 +91,7 @@ namespace ProductCatalog.Controllers
         [ProducesResponseType(typeof(Brand), 204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
+        [Authorize]
         public async Task<IActionResult> DeleteBrandAsync([FromRoute] Guid id)
         {
             var obj = await _brandService.GetBrandByIdAsync(id);

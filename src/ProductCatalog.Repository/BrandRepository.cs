@@ -22,8 +22,8 @@ namespace ProductCatalog.Repository
         {
             try
             {
-                await _context.Brands.AddAsync(brand);
-                _context.SaveChanges();
+                _context.Brands.Add(brand);
+                await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {

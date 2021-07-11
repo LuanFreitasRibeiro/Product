@@ -18,5 +18,6 @@ namespace ProductCatalog.Domain.Response.Product
         public Category Category { get; set; }
         public Guid BrandId { get; set; }
         public Brand Brand { get; set; }
+        public string MyProperty { get; set; } = "minha propriedade de teste ";
     }
 }
