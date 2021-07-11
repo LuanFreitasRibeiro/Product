@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace ProductCatalog.Domain
 {
@@ -15,6 +13,6 @@ namespace ProductCatalog.Domain
         [Required]
         public string Password { get; set; }
 
-        public string Role { get; set; }
+        public string Role { get; set; } 
     }
 }
