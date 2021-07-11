@@ -1,4 +1,7 @@
-﻿using ProductCatalog.Domain;
+﻿using Microsoft.AspNetCore.Mvc;
+using ProductCatalog.Domain;
+using ProductCatalog.Domain.Request.Product;
+using ProductCatalog.Domain.Response.Product;
 using ProductCatalog.ViewModels.ProductViewModels;
 using System;
 using System.Collections.Generic;
@@ -8,7 +11,7 @@ namespace ProductCatalog.Application.Service.Abstraction
 {
     public interface IProductService
     {
-        Task<Product> AddAsync(Product product);
+        Task<Product> AddAsync(CreateProductRequest product);
         Task<Product> GetProductByIdAsync(Guid id);
         Task<IEnumerable<Product>> GetAllProductAsync();
         Task DeleteProductAsync(Guid id);

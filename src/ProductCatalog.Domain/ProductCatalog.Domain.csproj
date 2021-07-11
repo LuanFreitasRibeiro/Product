@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="Flunt" Version="1.0.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Request\Product\CreateProductRequest.cs" />
   </ItemGroup>
 
 </Project>

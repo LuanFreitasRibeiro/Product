@@ -42,6 +42,7 @@ namespace ProductCatalog
             });
 
             services.AddControllers();
+            services.AddControllersWithViews();
 
             var key = Encoding.ASCII.GetBytes(Settings.Secret);
             services.AddAuthentication(x =>

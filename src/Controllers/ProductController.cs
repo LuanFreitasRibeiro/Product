@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
+using ProductCatalog.Domain.Request.Product;
 using ProductCatalog.ViewModels.ProductViewModels;
 using System;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace ProductCatalog.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
-        public async Task<IActionResult> CreateProduct([FromBody] Product product)
+        public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest product)
         {
             try
             {
