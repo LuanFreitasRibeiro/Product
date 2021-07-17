@@ -1,5 +1,5 @@
-# Product
-Projeto em .NetCore 3.1 para realização de testes práticos de estudos.
+# Product - Api
+Projeto em .NetCore 3.1 voltado para estudos.
 
 # Postman Collection
 
