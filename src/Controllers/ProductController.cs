@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
 using ProductCatalog.Domain.Request.Product;
+using ProductCatalog.Domain.Response;
+using ProductCatalog.Domain.Response.Product;
 using System;
 using System.Threading.Tasks;
 
@@ -23,7 +25,7 @@ namespace ProductCatalog.Controllers
 
         #region Create Product
         [HttpPost]
-        [ProducesResponseType(typeof(Product), 200)]
+        [ProducesResponseType(typeof(CreateProductResponse), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
@@ -46,7 +48,7 @@ namespace ProductCatalog.Controllers
 
         #region Get Products
         [HttpGet]
-        [ProducesResponseType(typeof(Product), 200)]
+        [ProducesResponseType(typeof(GetProductResponse), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
@@ -59,7 +61,7 @@ namespace ProductCatalog.Controllers
         #region Get Product By Id
         [HttpGet]
         [Route("{id}")]
-        [ProducesResponseType(typeof(Product), 200)]
+        [ProducesResponseType(typeof(GetProductResponse), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
@@ -75,7 +77,7 @@ namespace ProductCatalog.Controllers
 
         #region Update Product
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(Product), 204)]
+        [ProducesResponseType(typeof(UpdateProductResponse), 204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
@@ -91,7 +93,7 @@ namespace ProductCatalog.Controllers
 
         #region MyRegion
         [HttpDelete("{id}")]
-        [ProducesResponseType(typeof(Product), 204)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]

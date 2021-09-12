@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Application.Service.Abstraction;
-using ProductCatalog.Domain;
 using ProductCatalog.Domain.Request.Brand;
+using ProductCatalog.Domain.Response;
+using ProductCatalog.Domain.Response.Brand;
 using System;
 using System.Threading.Tasks;
 
@@ -23,7 +24,7 @@ namespace ProductCatalog.Controllers
 
         #region Create Brand
         [HttpPost]
-        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(typeof(CreateBrandResponse), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
@@ -43,7 +44,7 @@ namespace ProductCatalog.Controllers
 
         #region Get All Brands
         [HttpGet]
-        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(typeof(GetBrandResponse), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
@@ -56,7 +57,7 @@ namespace ProductCatalog.Controllers
         #region Get Brand By Id
         [HttpGet]
         [Route("{id}")]
-        [ProducesResponseType(typeof(Brand), 200)]
+        [ProducesResponseType(typeof(GetBrandResponse), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
@@ -72,7 +73,7 @@ namespace ProductCatalog.Controllers
 
         #region Update Brand Async
         [HttpPatch("{id}")]
-        [ProducesResponseType(typeof(Brand), 204)]
+        [ProducesResponseType(typeof(UpdateBrandResponse), 204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
@@ -88,7 +89,7 @@ namespace ProductCatalog.Controllers
 
         #region Delete Brand Async
         [HttpDelete("{id}")]
-        [ProducesResponseType(typeof(Brand), 204)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]

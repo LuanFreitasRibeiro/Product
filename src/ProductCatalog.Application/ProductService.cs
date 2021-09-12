@@ -1,6 +1,9 @@
-﻿using ProductCatalog.Application.Service.Abstraction;
+﻿using AutoMapper;
+using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
 using ProductCatalog.Domain.Request.Product;
+using ProductCatalog.Domain.Response;
+using ProductCatalog.Domain.Response.Product;
 using ProductCatalog.Repository.Abstraction;
 using System;
 using System.Collections.Generic;
@@ -11,13 +14,15 @@ namespace ProductCatalog.Application.Service
     public class ProductService : IProductService
     {
         private readonly IProductRepository _productRepository;
+        private readonly IMapper _mapper;
 
-        public ProductService(IProductRepository productRepository)
+        public ProductService(IProductRepository productRepository, IMapper mapper)
         {
             _productRepository = productRepository;
+            _mapper = mapper;
         }
 
-        public async Task<Product> AddAsync(CreateProductRequest product)
+        public async Task<CreateProductResponse> AddAsync(CreateProductRequest product)
         {
             try
             {
@@ -36,7 +41,9 @@ namespace ProductCatalog.Application.Service
 
                 await _productRepository.AddAsync(obj);
 
-                return obj;
+                var result = _mapper.Map<CreateProductResponse>(obj);
+
+                return result;
             }
             catch (ArgumentException ex)
             {
@@ -45,14 +52,22 @@ namespace ProductCatalog.Application.Service
             }
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductAsync()
+        public async Task<IEnumerable<GetProductResponse>> GetAllProductAsync()
         {
-            return await _productRepository.GetAllProductsAsync();
+            var response = await _productRepository.GetAllProductsAsync();
+
+            var result = _mapper.Map<IEnumerable<GetProductResponse>>(response);
+
+            return result;
         }
 
-        public async Task<Product> GetProductByIdAsync(Guid id)
+        public async Task<GetProductResponse> GetProductByIdAsync(Guid id)
         {
-            return await _productRepository.GetProductByIdAsync(id);
+            var response = await _productRepository.GetProductByIdAsync(id);
+
+            var result = _mapper.Map<GetProductResponse>(response);
+
+            return result;
         }
 
         public async Task DeleteProductAsync(Guid id)
@@ -60,7 +75,7 @@ namespace ProductCatalog.Application.Service
             await _productRepository.DeleteProductAync(id);
         }
 
-        public async Task<Product> UpdateProductAsync(Guid id, UpdateProductRequest product)
+        public async Task<UpdateProductResponse> UpdateProductAsync(Guid id, UpdateProductRequest product)
         {
             var obj = new Product()
             {
@@ -76,7 +91,12 @@ namespace ProductCatalog.Application.Service
             };
 
             await _productRepository.UpdateProductAsync(obj);
-            return await _productRepository.GetProductByIdAsync(id);
+
+            var response = await _productRepository.GetProductByIdAsync(id);
+
+            var result = _mapper.Map<UpdateProductResponse>(response);
+
+            return result;
         }
     }
 }
