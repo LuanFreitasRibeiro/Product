@@ -1,6 +1,13 @@
 ﻿using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
 using ProductCatalog.Domain.Request.Category;
+﻿using Automapper.Extensions;
+using AutoMapper;
+using ProductCatalog.Application.Service.Abstraction;
+using ProductCatalog.Domain;
+using ProductCatalog.Domain.Request.Category;
+using ProductCatalog.Domain.Response;
+using ProductCatalog.Domain.Response.Category;
 using ProductCatalog.Repository.Abstraction;
 using System;
 using System.Collections.Generic;
@@ -11,13 +18,15 @@ namespace ProductCatalog.Application.Service
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IMapper _mapper;
 
-        public CategoryService(ICategoryRepository categoryRepository)
+        public CategoryService(ICategoryRepository categoryRepository, IMapper mapper)
         {
             _categoryRepository = categoryRepository;
+            _mapper = mapper;
         }
 
-        public async Task<Category> AddAsync(CreateCategoryRequest category)
+        public async Task<CreateCategoryResponse> AddAsync(CreateCategoryRequest category)
         {
             if (string.IsNullOrEmpty(category.Name))
             {
@@ -32,23 +41,33 @@ namespace ProductCatalog.Application.Service
 
             await _categoryRepository.AddAsync(obj);
 
-            return obj;
+            var result = _mapper.Map<CreateCategoryResponse>(obj);
+
+            return result;
         }
 
-        public async Task<Category> GetCategoryByIdAsync(Guid id)
+        public async Task<GetCategoryResponse> GetCategoryByIdAsync(Guid id)
         {
-            return await _categoryRepository.GetCategoryByIdAsync(id);
+            var response = await _categoryRepository.GetCategoryByIdAsync(id);
+
+            var result = _mapper.Map<GetCategoryResponse>(response);
+
+            return  result;
         }
-        public async Task<IEnumerable<Category>> GetAllCategoryAsync()
+        public async Task<IEnumerable<GetCategoryResponse>> GetAllCategoryAsync()
         {
-            return await _categoryRepository.GetAllCategoryAsync();
+            var response = await _categoryRepository.GetAllCategoryAsync();
+
+            var result = _mapper.Map<IEnumerable<GetCategoryResponse>>(response);
+
+            return result;
         }
         public async Task DeleteCategoryAsync(Guid id)
         {
             await _categoryRepository.DeleteCategoryAsync(id);
         }
 
-        public async Task<Category> UpdateCategoryAsync(Guid id, UpdateCategoryRequest category)
+        public async Task<UpdateCategoryResponse> UpdateCategoryAsync(Guid id, UpdateCategoryRequest category)
         {
             try
             {
@@ -59,7 +78,12 @@ namespace ProductCatalog.Application.Service
                 };
 
                 await _categoryRepository.UpdateCategoryAsync(obj);
-                return await _categoryRepository.GetCategoryByIdAsync(obj.Id);
+
+                var response = await _categoryRepository.GetCategoryByIdAsync(obj.Id);
+
+                var result = _mapper.Map<UpdateCategoryResponse>(response);
+
+                return result;
             }
             catch (Exception ex)
             {

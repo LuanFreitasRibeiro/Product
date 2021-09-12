@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductCatalog.Application.Service.Abstraction;
-using ProductCatalog.Domain;
 using ProductCatalog.Domain.Request.Category;
+using ProductCatalog.Domain.Response;
+using ProductCatalog.Domain.Response.Category;
 using System;
 using System.Threading.Tasks;
 
@@ -23,7 +24,7 @@ namespace ProductCatalog.Controllers
 
         #region Create Category
         [HttpPost]
-        [ProducesResponseType(typeof(Category), 200)]
+        [ProducesResponseType(typeof(CreateCategoryResponse), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
@@ -44,7 +45,7 @@ namespace ProductCatalog.Controllers
 
         #region Get Caregories
         [HttpGet]
-        [ProducesResponseType(typeof(Category), 200)]
+        [ProducesResponseType(typeof(GetCategoryResponse), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
@@ -56,7 +57,7 @@ namespace ProductCatalog.Controllers
 
         #region Get Cateogiries By Id
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(Category), 200)]
+        [ProducesResponseType(typeof(GetCategoryResponse), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
@@ -72,7 +73,7 @@ namespace ProductCatalog.Controllers
 
         #region Update Category
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(Category), 204)]
+        [ProducesResponseType(typeof(UpdateCategoryResponse), 204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
@@ -88,7 +89,7 @@ namespace ProductCatalog.Controllers
 
         #region Delete Category
         [HttpDelete("{id}")]
-        [ProducesResponseType(typeof(Category), 204)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]

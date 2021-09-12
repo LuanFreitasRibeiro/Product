@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -14,6 +15,11 @@ using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Application.Settings;
 using ProductCatalog.Application.Validators;
 using ProductCatalog.Data;
+using ProductCatalog.Domain;
+using ProductCatalog.Domain.Response;
+using ProductCatalog.Domain.Response.Brand;
+using ProductCatalog.Domain.Response.Category;
+using ProductCatalog.Domain.Response.Product;
 using ProductCatalog.Repository;
 using ProductCatalog.Repository.Abstraction;
 using ProductCatalog.Repository.Interfaces;
@@ -64,6 +70,26 @@ namespace ProductCatalog
 
             services.AddDbContext<StoreDataContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("connectionString")));
             //services.AddScoped<StoreDataContext, StoreDataContext>();
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Brand, CreateBrandResponse>();
+                cfg.CreateMap<Brand, GetBrandResponse>();
+                cfg.CreateMap<Brand, UpdateBrandResponse>();
+
+                cfg.CreateMap<Category, CreateCategoryResponse>();
+                cfg.CreateMap<Category, GetCategoryResponse>();
+                cfg.CreateMap<Category, UpdateCategoryResponse>();
+
+                cfg.CreateMap<Product, CreateProductResponse>();
+                cfg.CreateMap<Product, GetProductResponse>();
+                cfg.CreateMap<Product, UpdateProductResponse>();
+            });
+
+            IMapper mapper = config.CreateMapper();
+
+            services.AddSingleton(mapper);
+
+            services.AddDbContext<StoreDataContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("connectionString")));
             services.AddScoped<BrandValidator, BrandValidator>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();

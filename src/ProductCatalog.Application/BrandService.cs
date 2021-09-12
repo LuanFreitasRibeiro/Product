@@ -1,7 +1,10 @@
-﻿using ProductCatalog.Application.Service.Abstraction;
+﻿using AutoMapper;
+using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Application.Validators;
 using ProductCatalog.Domain;
 using ProductCatalog.Domain.Request.Brand;
+using ProductCatalog.Domain.Response;
+using ProductCatalog.Domain.Response.Brand;
 using ProductCatalog.Repository.Abstraction;
 using System;
 using System.Collections.Generic;
@@ -12,18 +15,16 @@ namespace ProductCatalog.Application.Service
     public class BrandService : IBrandService
     {
         private readonly IBrandRepository _brandRepository;
-        private readonly BrandValidator _brandValidator;
+        private readonly IMapper _mapper;
 
-        public BrandService(IBrandRepository brandRepository, BrandValidator brandValidator)
+        public BrandService(IBrandRepository brandRepository, IMapper mapper)
         {
             _brandRepository = brandRepository;
-            _brandValidator = brandValidator;
+            _mapper = mapper;
         }
 
-        public async Task<Brand> AddAsync(CreateBrandRequest brand)
+        public async Task<CreateBrandResponse> AddAsync(CreateBrandRequest brand)
         {
-            _brandValidator.Validate(brand);
-
             var obj = new Brand()
             {
                 Id = Guid.NewGuid(),
@@ -32,23 +33,32 @@ namespace ProductCatalog.Application.Service
 
             await _brandRepository.AddAsync(obj);
 
-            return obj;
+            var result = _mapper.Map<CreateBrandResponse>(obj);
+
+            return result;
         }
 
-        public async Task<Brand> GetBrandByIdAsync(Guid id)
+        public async Task<GetBrandResponse> GetBrandByIdAsync(Guid id)
         {
-            return await _brandRepository.GetBrandByIdAsync(id);
+            var response = await _brandRepository.GetBrandByIdAsync(id);
+
+            var result = _mapper.Map<GetBrandResponse>(response);
+
+            return result;
         }
-        public async Task<IEnumerable<Brand>> GetAllBrandAsync()
+        public async Task<IEnumerable<GetBrandResponse>> GetAllBrandAsync()
         {
-            return await _brandRepository.GetAllBrandAsync();
+            var response = await _brandRepository.GetAllBrandAsync();
+
+            var result = _mapper.Map<IEnumerable<GetBrandResponse>>(response);
+            return result;
         }
         public async Task DeleteBrandAsync(Guid id)
         {
             await _brandRepository.DeleteBrandAsync(id);
         }
 
-        public async Task<Brand> UpdateBrandAsync(Guid id, UpdateBrandRequest brand)
+        public async Task<UpdateBrandResponse> UpdateBrandAsync(Guid id, UpdateBrandRequest brand)
         {
             try
             {
@@ -59,7 +69,12 @@ namespace ProductCatalog.Application.Service
                 };
 
                 await _brandRepository.UpdateBrandAsync(obj);
-                return await _brandRepository.GetBrandByIdAsync(obj.Id);
+
+                var response = await _brandRepository.GetBrandByIdAsync(obj.Id);
+
+                var result = _mapper.Map<UpdateBrandResponse>(response);
+
+                return result;
             }
             catch (ArgumentNullException ex)
             {
