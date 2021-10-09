@@ -1,14 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ProductCatalog.Application;
 using ProductCatalog.Application.Interfaces;
-using ProductCatalog.Data;
-using ProductCatalog.Domain;
 using ProductCatalog.Domain.Request.User;
+using ProductCatalog.Domain.Response.User;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ProductCatalog.Controllers
@@ -17,23 +13,23 @@ namespace ProductCatalog.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
-        private readonly StoreDataContext _context;
+        private readonly IAuthenticateService _authenticateService;
 
         #region Constructor
-        public UserController(IUserService userService, StoreDataContext context)
+        public UserController(IUserService userService, IAuthenticateService authenticateService)
         {
             _userService = userService;
-            _context = context;
+            _authenticateService = authenticateService;
         }
         #endregion
 
         #region GetUsers
         [HttpGet]
-        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(GetUserResponse), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         //[Authorize(Roles = "manage")]
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<IEnumerable<GetUserResponse>> GetUsers()
         {
             return await _userService.GetUsers();
         }
@@ -41,7 +37,7 @@ namespace ProductCatalog.Controllers
 
         #region Get User by Id
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(GetUserResponse), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize(Roles = "manage")]
@@ -57,7 +53,7 @@ namespace ProductCatalog.Controllers
 
         #region CreateUser
         [HttpPost]
-        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(CreateUserResponse), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         [Authorize]
@@ -81,24 +77,14 @@ namespace ProductCatalog.Controllers
 
         #region Authenticate
         [HttpPost("login")]
-        public async Task<dynamic> Authenticate([FromBody] User model)
+        public async Task<dynamic> Authenticate([FromBody] AuthenticateRequest model)
         {
-
             try
             {
-                var user = await _context.Users
-                    .AsNoTracking()
-                    .Where(x => x.Username == model.Username && x.Password == model.Password)
-                    .FirstOrDefaultAsync();
-
-                if (user == null)
-                    return NotFound(new { message = "Username or Password is invalid" });
-
-                var token = TokenService.GenerateToken(user);
-
+                var auth = await _authenticateService.Authenticate(model);
                 return Ok(new
                 {
-                    token = token
+                    token = auth
                 });
 
             }

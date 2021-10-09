@@ -1,9 +1,12 @@
-﻿using ProductCatalog.Application.Interfaces;
+﻿using AutoMapper;
+using ProductCatalog.Application.Interfaces;
 using ProductCatalog.Domain;
 using ProductCatalog.Domain.Request.User;
+using ProductCatalog.Domain.Response.User;
 using ProductCatalog.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace ProductCatalog.Application
@@ -11,41 +14,49 @@ namespace ProductCatalog.Application
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _mapper = mapper;
         }
 
-        public async Task<User> CreateUser(CreateUserRequest user)
+        public async Task<CreateUserResponse> CreateUser(CreateUserRequest user)
         {
+            Hash hash = new Hash(SHA256.Create());
+
             var obj = new User()
             {
                 Id = Guid.NewGuid(),
                 Username = user.Username,
-                Password = user.Password,
+                Password = hash.EncryptPassword(user.Password),
                 Role = user.Role
             };
 
             await _userRepository.Add(obj);
 
-            obj.Password = "";
+            var result = _mapper.Map<CreateUserResponse>(obj);
 
-            return obj;
+            return result;
         }
 
-        public async Task<User> GetUserById(Guid id)
+        public async Task<GetUserResponse> GetUserById(Guid id)
         {
             var response = await _userRepository.GetUserById(id);
 
-            response.Password = "";
+            var result = _mapper.Map<GetUserResponse>(response);
 
-            return response;
+            return result;
         }
 
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<IEnumerable<GetUserResponse>> GetUsers()
         {
-            return await _userRepository.GetUsers();
+            var response = await _userRepository.GetUsers();
+
+            var result = _mapper.Map<IEnumerable<GetUserResponse>>(response);
+
+            return result;
         }
     }
 }

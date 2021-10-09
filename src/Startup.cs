@@ -20,6 +20,7 @@ using ProductCatalog.Domain.Response;
 using ProductCatalog.Domain.Response.Brand;
 using ProductCatalog.Domain.Response.Category;
 using ProductCatalog.Domain.Response.Product;
+using ProductCatalog.Domain.Response.User;
 using ProductCatalog.Repository;
 using ProductCatalog.Repository.Abstraction;
 using ProductCatalog.Repository.Interfaces;
@@ -83,13 +84,15 @@ namespace ProductCatalog
                 cfg.CreateMap<Product, CreateProductResponse>();
                 cfg.CreateMap<Product, GetProductResponse>();
                 cfg.CreateMap<Product, UpdateProductResponse>();
+
+                cfg.CreateMap<User, CreateUserResponse>();
+                cfg.CreateMap<User, GetUserResponse>();
             });
 
             IMapper mapper = config.CreateMapper();
 
             services.AddSingleton(mapper);
 
-            services.AddDbContext<StoreDataContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("connectionString")));
             services.AddScoped<BrandValidator, BrandValidator>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -98,6 +101,7 @@ namespace ProductCatalog
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IBrandService, BrandService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAuthenticateService, AuthenticateService>();
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddSwaggerGen(x => {

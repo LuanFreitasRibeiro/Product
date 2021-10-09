@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ProductCatalog.Data;
 using ProductCatalog.Domain;
 using ProductCatalog.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ProductCatalog.Repository
@@ -27,7 +25,7 @@ namespace ProductCatalog.Repository
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }
