@@ -1,8 +1,4 @@
-﻿using ProductCatalog.Application.Service.Abstraction;
-using ProductCatalog.Domain;
-using ProductCatalog.Domain.Request.Category;
-﻿using Automapper.Extensions;
-using AutoMapper;
+﻿using AutoMapper;
 using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Domain;
 using ProductCatalog.Domain.Request.Category;
