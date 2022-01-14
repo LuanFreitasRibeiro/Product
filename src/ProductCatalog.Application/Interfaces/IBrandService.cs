@@ -1,4 +1,6 @@
 ﻿using ProductCatalog.Domain;
+using ProductCatalog.Domain.BaseResponse;
+using ProductCatalog.Domain.ErrorsResponse;
 using ProductCatalog.Domain.Request.Brand;
 using ProductCatalog.Domain.Response;
 using ProductCatalog.Domain.Response.Brand;

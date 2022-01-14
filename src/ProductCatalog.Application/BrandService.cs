@@ -1,14 +1,18 @@
 ﻿using AutoMapper;
 using ProductCatalog.Application.Service.Abstraction;
-using ProductCatalog.Application.Validators;
+using ProductCatalog.Application.Validator.Brand;
 using ProductCatalog.Domain;
+using ProductCatalog.Domain.BaseResponse;
+using ProductCatalog.Domain.ErrorsResponse;
 using ProductCatalog.Domain.Request.Brand;
 using ProductCatalog.Domain.Response;
 using ProductCatalog.Domain.Response.Brand;
 using ProductCatalog.Repository.Abstraction;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace ProductCatalog.Application.Service
 {
@@ -25,11 +29,24 @@ namespace ProductCatalog.Application.Service
 
         public async Task<CreateBrandResponse> AddAsync(CreateBrandRequest brand)
         {
+            var brandValidatorResult = new CreateBrandValidator().Validate(brand);
+
+            var errorResult = new List<BaseResponse<CreateBrandResponse, ErrorsResponse>>();
+
+            //errorResult.AddRange(brandValidatorResult.Errors.Select(p => new BaseResponse<CreateBrandResponse, ErrorsResponse>().Error.AddError(p.ErrorMessage)));
+
+            if (!brandValidatorResult.IsValid)
+            {
+                var response = _mapper.Map<CreateBrandResponse>(errorResult);
+                return response;
+            }
+
             var obj = new Brand()
             {
                 Id = Guid.NewGuid(),
                 Name = brand.Name,
             };
+
 
             await _brandRepository.AddAsync(obj);
 
