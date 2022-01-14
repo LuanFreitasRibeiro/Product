@@ -13,7 +13,6 @@ using ProductCatalog.Application.Interfaces;
 using ProductCatalog.Application.Service;
 using ProductCatalog.Application.Service.Abstraction;
 using ProductCatalog.Application.Settings;
-using ProductCatalog.Application.Validators;
 using ProductCatalog.Data;
 using ProductCatalog.Domain;
 using ProductCatalog.Domain.Response;
@@ -93,7 +92,6 @@ namespace ProductCatalog
 
             services.AddSingleton(mapper);
 
-            services.AddScoped<BrandValidator, BrandValidator>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IBrandRepository, BrandRepository>();
