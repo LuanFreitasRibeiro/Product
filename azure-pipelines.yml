@@ -2,11 +2,217 @@
 # Build and test ASP.NET Core projects targeting .NET Core.
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-
-name: $(Date:yyyyMMdd)$(Rev:.r)
 variables:
-  var1: value1
-jobs:
-- job: One
-  steps:
-  - script: echo First step!
+  organization: 'luanfreitasribeiro'
+  solution_path: 'src/ProductCatalog.sln'
+  main_project_path: 'src/ProductCatalog.csproj'
+  main_project_name: 'ProductCatalog'
+  execute_test: 'false'
+  test_project_base_folder: 'src/ProductCatalog.Test'
+  test_project_path: 'src/ProductCatalog.Test/ProductCatalog.Test.csproj'
+  execute_sonarqube: 'false'
+  sonarqube_project: 'productCatalog'
+  sonarqube_account: 'Sonarqube'
+
+parameters:
+- name: STAGING_TAG
+  type: string
+  default: ' ' # Empty space because the azure does not let us have a optional parameter for now. The code will handle this value if you deploy with an empty space.
+  displayName: 'Tag to deploy in staging. Caution: check if the inserted tag is one (major/minor/patch) version higher than the latest tag in master.'
+
+trigger:
+  branches:
+    include:
+    - release/*  
+    - hotfix/*
+    #- develop
+    #- master
+    #- feature/*
+    #- bugfix/*
+    #- requirement/*
+    #- improvement/*
+  tags:
+    include: 
+    - '*'
+
+pr:
+  branches:
+    include:
+    - develop
+    - master
+
+stages:
+- stage: BuildApp
+  jobs:        
+  - job: CheckVersion
+    variables: 
+      current_counter: $[counter(variables['Build.SourceBranchName'], 1)]   
+    steps:
+    - bash: |
+        if [[ "$(Build.SourceVersionMessage)" =~ "hotfix/" ]];
+        then 
+            echo "##vso[task.setvariable variable=IsHotfix;isOutput=true]true" 
+            echo "##vso[task.setvariable variable=PreviousPrefix;isOutput=true]hotfix"
+        else
+            echo "##vso[task.setvariable variable=IsHotfix;isOutput=true]false"
+            echo "##vso[task.setvariable variable=PreviousPrefix;isOutput=true]release"
+        fi
+        if [[ "$(Build.SourceBranch)" =~ "/hotfix/" ]] ||
+           [[ "$(Build.SourceBranch)" =~ "/release/" ]]; 
+        then
+            version=`sed 's/v//g' <<< $BUILD_SOURCEBRANCHNAME`
+            echo "Generate Preview Release Version"
+            echo "Version: $version"
+            echo "         $version-preview.$(current_counter)"
+            echo "##vso[task.setvariable variable=DeployType;isOutput=true]staging"
+            echo "##vso[task.setvariable variable=PublishDockerImage;isOutput=true]true"
+            echo "##vso[task.setvariable variable=PackingNuget;isOutput=true]true"
+            echo "##vso[task.setvariable variable=PureVersion;isOutput=true]$version"
+            echo "##vso[task.setvariable variable=PackageVersion;isOutput=true]$version-preview.$(current_counter)"
+            echo "##vso[build.updatebuildnumber]$version-preview.$(current_counter)"
+        elif [[ "$(Build.SourceBranch)" =~ "/tags/" ]];
+        then
+            version=`sed 's/v//g' <<< $BUILD_SOURCEBRANCHNAME`
+            echo "Generate Release Version"
+            echo "Version: $version"
+            echo "##vso[task.setvariable variable=DeployType;isOutput=true]production"
+            echo "##vso[task.setvariable variable=PublishDockerImage;isOutput=true]false"
+            echo "##vso[task.setvariable variable=PackingNuget;isOutput=true]true"
+            echo "##vso[task.setvariable variable=SonarMasterWhenTag;isOutput=true]sonar.branch.name=master"
+            echo "##vso[task.setvariable variable=PureVersion;isOutput=true]$version"
+            echo "##vso[task.setvariable variable=PackageVersion;isOutput=true]$version"
+            echo "##vso[build.updatebuildnumber]$version"
+        else
+            echo "Generate Development Version"
+            staging_tag=`echo "${{ parameters.STAGING_TAG }}" | xargs`
+            if [[ -z "$staging_tag" ]]
+            then
+              version=`echo "$BUILD_SOURCEVERSIONMESSAGE" | grep -oP '[\[]staging v?\d+.\d+.\d+[\]]' | grep -oP '\d+.\d+.\d+'`
+            else
+              version=`echo "$staging_tag" | grep -oP '\d+.\d+.\d+'`
+            fi
+            if [[ -z "$version" ]];
+            then
+                echo "Version: $(Build.BuildNumber)"
+                echo "##vso[task.setvariable variable=PublishDockerImage;isOutput=true]false"
+                echo "##vso[task.setvariable variable=PackingNuget;isOutput=true]false"
+                echo "##vso[task.setvariable variable=PureVersion;isOutput=true]$(Build.BuildNumber)"
+            else
+                echo "Version: $version-alpha.$(Build.BuildNumber)"
+                echo "Force staging enabled!"
+                echo "##vso[task.setvariable variable=DeployType;isOutput=true]staging"
+                echo "##vso[task.setvariable variable=PublishDockerImage;isOutput=true]true"
+                echo "##vso[task.setvariable variable=PackingNuget;isOutput=true]true"
+                echo "##vso[task.setvariable variable=PureVersion;isOutput=true]$version-alpha.$(Build.BuildNumber)"
+                echo "##vso[task.setvariable variable=PackageVersion;isOutput=true]$version-alpha.$(Build.BuildNumber)"
+                echo "##vso[build.updatebuildnumber]$version-alpha.$(Build.BuildNumber)"
+            fi
+        fi
+      displayName: Check Version Number 
+      name: CheckVersionTask
+    - bash: |
+        STAGING_URL="https://dev.azure.com/$(organization)/$(System.TeamProject)/_apis/build/status/$(System.DefinitionId)?branchName=$(CheckVersionTask.PreviousPrefix)/$(Build.BuildNumber)&stageName=DeployStaging"
+        STAGING_RESULT=$`curl --silent $STAGING_URL`
+        echo "URL: $STAGING_URL" 
+        echo "RESULT: $STAGING_RESULT"
+        SUCCEEDED=$`echo $STAGING_RESULT | grep -P 'succeeded' -o | head -n 1`
+        if [[ "$STAGING_RESULT" =~ "succeeded" ]];
+        then
+            echo "$PREVIOUS_PREFIX branch is ok!"
+        else
+            echo "$PREVIOUS_PREFIX branch is not ok!"
+            exit 1
+        fi
+      condition: contains(variables['Build.SourceBranch'], '/tags/')
+      displayName: Break if release/hotfix branch is not passing
+      name: BreakIsReleaseOrHotfixIsNotPassing
+    - bash: env
+      displayName: Show environment variables
+
+  - job: Build
+    dependsOn: 
+    - CheckVersion
+    condition: succeeded()
+    steps:
+    - script: | 
+        echo "$(Build.BuildNumber)"
+      displayName: Check nuget custom config
+    - script: |
+        pwd && ls -la 
+        dotnet restore "$(solution_path)"
+        dotnet publish -c Release -o $(System.DefaultWorkingDirectory)/bin "$(main_project_path)"
+        mkdir artifact
+        cp -r $(System.DefaultWorkingDirectory)/bin artifact/bin
+      displayName: Build Application
+    - task: PublishPipelineArtifact@1
+      displayName: Store Application Artifact
+      inputs:
+        path: $(System.DefaultWorkingDirectory)/artifact
+        artifact: $(main_project_name)
+
+  - job: UnitTests
+    dependsOn: 
+    - Build
+    - CheckVersion
+    condition: and(succeeded(), eq(variables['execute_test'], 'true'))
+    steps:
+    - script: | 
+        dotnet tool install --global coverlet.console 
+        dotnet tool install dotnet-reportgenerator-globaltool --tool-path . 
+        dotnet add $(test_project_path) package coverlet.msbuild
+        dotnet add $(test_project_path) package XunitXml.TestLogger
+        dotnet test /p:CollectCoverage=true \
+                    /p:CoverletOutputFormat=\"opencover,cobertura\" \
+                    /p:CoverletOutput=results/result \
+                    /p:Exclude=[xunit.*]* "$(solution_path)" \
+                    --test-adapter-path:. --logger:"xunit;LogFilePath=results/result.xunit.xml"
+        ./reportgenerator "-reports:$(test_project_base_folder)/results/result.opencover.xml" \
+                          "-targetdir:$(test_project_base_folder)/results/Cobertura" \
+                          "-reporttypes:Cobertura;HTMLInline;HTMLChart"
+        echo "##vso[task.setvariable variable=OpencoverSonar;isOutput=true]sonar.cs.opencover.reportsPaths=$(Pipeline.Workspace)/result.opencover.xml"
+      displayName: Running Unit Tests
+      name: UnitTestsTask
+    - task: PublishPipelineArtifact@1
+      displayName: Store Test Result
+      inputs:
+        path: $(System.DefaultWorkingDirectory)/$(test_project_base_folder)/results
+        artifact: UnitTestResults
+    - task: PublishCodeCoverageResults@1
+      displayName: Publish Code Coverage 
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: $(System.DefaultWorkingDirectory)/$(test_project_base_folder)/results/result.cobertura.xml
+        pathToSources: .
+        failIfCoverageEmpty: true
+    - task: PublishTestResults@2
+      displayName: Publish Test Result
+      inputs:
+        testResultsFormat: 'XUnit'
+        testResultsFiles: '$(System.DefaultWorkingDirectory)/$(test_project_base_folder)/results/result.xunit.xml'
+        testRunTitle: 'Collecting Test Results'
+
+  - job: QualityAnalysis
+    dependsOn: 
+    - CheckVersion
+    - Build
+    - UnitTests
+    condition: |
+      and
+      (
+        eq(dependencies.CheckVersion.result, 'Succeeded'),
+        eq(dependencies.Build.result, 'Succeeded'),
+        in(dependencies.UnitTests.result, 'Succeeded', 'Skipped'),
+        eq(variables['execute_sonarqube'], 'true')
+      )
+    variables:
+      SonarMasterWhenTag: $[ dependencies.CheckVersion.outputs['CheckVersionTask.SonarMasterWhenTag'] ]
+      OpencoverSonar: $[ dependencies.UnitTests.outputs['UnitTestsTask.OpencoverSonar'] ]
+    steps:
+    - task: SonarCloudPrepare@1
+      inputs:
+        SonarCloud: 'SonarCloud'
+        organization: '$(organization)'
+        scannerMode: 'MSBuild'
+        projectKey: '$(sonarqube_project)'
+        projectName: 'ProductCatalog'
+    - task: SonarCloudAnalyze@1
