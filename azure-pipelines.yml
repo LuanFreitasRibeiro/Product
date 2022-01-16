@@ -9,7 +9,7 @@ variables:
   execute_test: 'false'
   test_project_base_folder: 'src/ProductCatalog.Test'
   test_project_path: 'src/ProductCatalog.Test/ProductCatalog.Test.csproj'
-  execute_sonarqube: 'true'
+  execute_sonarqube: 'false'
   sonarqube_project: 'LuanFreitasRibeiro_Product'
   sonarqube_account: 'Sonarqube'
 
