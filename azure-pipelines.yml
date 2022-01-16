@@ -2,7 +2,10 @@
 # Build and test ASP.NET Core projects targeting .NET Core.
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-
+variables:
+  solution_path: 'src/ProductCatalog.sln'
+  main_project_path: 'src/ProductCatalog.csproj'
+  main_project_name: 'ProductCatalog'
 
 parameters:
 - name: STAGING_TAG
@@ -118,6 +121,27 @@ stages:
       name: BreakIsReleaseOrHotfixIsNotPassing
     - bash: env
       displayName: Show environment variables
+
+  - job: Build
+    dependsOn: 
+    - CheckVersion
+    condition: succeeded()
+    steps:
+    - script: | 
+        echo "$(Build.BuildNumber)"
+      displayName: Check nuget custom config
+    - script: |
+        pwd && ls -la 
+        dotnet restore "$(solution_path)"
+        dotnet publish -c Release -o $(System.DefaultWorkingDirectory)/bin "$(main_project_path)"
+        mkdir artifact
+        cp -r $(System.DefaultWorkingDirectory)/bin artifact/bin
+      displayName: Build Application
+    - task: PublishPipelineArtifact@1
+      displayName: Store Application Artifact
+      inputs:
+        path: $(System.DefaultWorkingDirectory)/artifact
+        artifact: $(main_project_name)
 
 
 # name: $(Date:yyyyMMdd)$(Rev:.r)
