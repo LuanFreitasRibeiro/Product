@@ -11,7 +11,7 @@ variables:
   test_project_base_folder: 'src/ProductCatalog.Test'
   test_project_path: 'src/ProductCatalog.Test/ProductCatalog.Test.csproj'
   execute_sonarqube: 'true'
-  sonarqube_project: 'ProductCatalolg'
+  sonarqube_project: 'productCatalog'
   sonarqube_account: 'Sonarqube'
 
 parameters:
@@ -211,8 +211,8 @@ stages:
     - task: SonarCloudPrepare@1
       inputs:
         SonarCloud: 'SonarCloud'
-        organization: 'luanfreitasribeiro'
+        organization: '$(organization)'
         scannerMode: 'MSBuild'
-        projectKey: 'productCatalog'
+        projectKey: '$(sonarqube_project)'
         projectName: 'ProductCatalog'
     - task: SonarCloudAnalyze@1
