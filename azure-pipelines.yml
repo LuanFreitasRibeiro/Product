@@ -52,6 +52,7 @@ stages:
         echo "##vso[task.setvariable variable=nuget_args]$nuget_args"
         echo "NugetArgs: --configfile $(nuget_config)"
       displayName: Check nuget custom config
+      condition: contains(variables['nuget_config'], '.config')
     - script: |
         pwd && ls -la 
         dotnet restore "$(solution_path)" $(nuget_args)
