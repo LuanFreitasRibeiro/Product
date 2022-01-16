@@ -190,52 +190,52 @@ stages:
         testResultsFiles: '$(System.DefaultWorkingDirectory)/$(test_project_base_folder)/results/result.xunit.xml'
         testRunTitle: 'Collecting Test Results'
 
-  - job: QualityAnalysis
-    dependsOn: 
-    - CheckVersion
-    - Build
-    - UnitTests
-    condition: |
-      and
-      (
-        eq(dependencies.CheckVersion.result, 'Succeeded'),
-        eq(dependencies.Build.result, 'Succeeded'),
-        in(dependencies.UnitTests.result, 'Succeeded', 'Skipped'),
-        eq(variables['execute_sonarqube'], 'true')
-      )
-    variables:
-      SonarMasterWhenTag: $[ dependencies.CheckVersion.outputs['CheckVersionTask.SonarMasterWhenTag'] ]
-      OpencoverSonar: $[ dependencies.UnitTests.outputs['UnitTestsTask.OpencoverSonar'] ]
-    steps:
-    - task: DownloadPipelineArtifact@2
-      displayName: Get Test Result
-      condition: eq(variables['execute_test'], 'true')
-      inputs:
-        artifact: UnitTestResults
-    - task: SonarCloudPrepare@1
-      displayName: Start Sonarqube Analysis
-      inputs:
-        SonarCloud: '$(sonarqube_account)'
-        scannerMode: 'MSBuild'
-        projectKey: '$(sonarqube_project)'
-        projectName: '$(main_project_name)'
-        extraProperties: |
-          sonar.sourceEncoding=UTF-8
-          sonar.scm.forceReloadAll=true
-          $(OpencoverSonar)
-          $(SonarMasterWhenTag)
-    - script: |
-        dotnet build "$(solution_path)"
-      displayName: Runnig Build For Analysis
-    - task: SonarCloudAnalyze@1
-      displayName: Finish Sonarqube Analysis
-    - task: SonarCloudPublish@1
-      displayName: Publish Sonarqube Analysis
-      inputs:
-        pollingTimeoutSec: '300'
-    - task: sonarcloud-buildbreaker@2
-      inputs:
-        SonarCloud: '$(sonarqube_account)'
+  # - job: QualityAnalysis
+  #   dependsOn: 
+  #   - CheckVersion
+  #   - Build
+  #   - UnitTests
+  #   condition: |
+  #     and
+  #     (
+  #       eq(dependencies.CheckVersion.result, 'Succeeded'),
+  #       eq(dependencies.Build.result, 'Succeeded'),
+  #       in(dependencies.UnitTests.result, 'Succeeded', 'Skipped'),
+  #       eq(variables['execute_sonarqube'], 'true')
+  #     )
+  #   variables:
+  #     SonarMasterWhenTag: $[ dependencies.CheckVersion.outputs['CheckVersionTask.SonarMasterWhenTag'] ]
+  #     OpencoverSonar: $[ dependencies.UnitTests.outputs['UnitTestsTask.OpencoverSonar'] ]
+  #   steps:
+  #   - task: DownloadPipelineArtifact@2
+  #     displayName: Get Test Result
+  #     condition: eq(variables['execute_test'], 'true')
+  #     inputs:
+  #       artifact: UnitTestResults
+  #   - task: SonarCloudPrepare@1
+  #     displayName: Start Sonarqube Analysis
+  #     inputs:
+  #       SonarCloud: '$(sonarqube_account)'
+  #       scannerMode: 'MSBuild'
+  #       projectKey: '$(sonarqube_project)'
+  #       projectName: '$(main_project_name)'
+  #       extraProperties: |
+  #         sonar.sourceEncoding=UTF-8
+  #         sonar.scm.forceReloadAll=true
+  #         $(OpencoverSonar)
+  #         $(SonarMasterWhenTag)
+  #   - script: |
+  #       dotnet build "$(solution_path)"
+  #     displayName: Runnig Build For Analysis
+  #   - task: SonarCloudAnalyze@1
+  #     displayName: Finish Sonarqube Analysis
+  #   - task: SonarCloudPublish@1
+  #     displayName: Publish Sonarqube Analysis
+  #     inputs:
+  #       pollingTimeoutSec: '300'
+  #   - task: sonarcloud-buildbreaker@2
+  #     inputs:
+  #       SonarCloud: '$(sonarqube_account)'
 # name: $(Date:yyyyMMdd)$(Rev:.r)
 # variables:
 #   var1: value1
