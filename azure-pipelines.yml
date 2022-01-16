@@ -31,11 +31,6 @@ pr:
     - develop
     - master
 
-pool:
- name: Default
- demands:
-   - Agent.OS -equals Linux
-
 stages:
 - stage: BuildApp
   jobs:        
