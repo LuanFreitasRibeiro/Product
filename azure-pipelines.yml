@@ -208,30 +208,11 @@ stages:
       SonarMasterWhenTag: $[ dependencies.CheckVersion.outputs['CheckVersionTask.SonarMasterWhenTag'] ]
       OpencoverSonar: $[ dependencies.UnitTests.outputs['UnitTestsTask.OpencoverSonar'] ]
     steps:
-    - task: DownloadPipelineArtifact@2
-      displayName: Get Test Result
-      condition: eq(variables['execute_test'], 'true')
-      inputs:
-        artifact: UnitTestResults
     - task: SonarCloudPrepare@1
-      displayName: Start Sonarqube Analysis
       inputs:
-        SonarCloud: '$(sonarqube_account)'
-        organization: '$(organization)'
+        SonarCloud: 'SonarCloud'
+        organization: 'luanfreitasribeiro'
         scannerMode: 'MSBuild'
-        projectKey: '$(sonarqube_project)'
-        projectName: '$(main_project_name)'
-        extraProperties: |
-          sonar.sourceEncoding=UTF-8
-          sonar.scm.forceReloadAll=true
-          $(OpencoverSonar)
-          $(SonarMasterWhenTag)
-    - script: |
-        dotnet build "$(solution_path)"
-      displayName: Runnig Build For Analysis
+        projectKey: 'productCatalog'
+        projectName: 'ProductCatalog'
     - task: SonarCloudAnalyze@1
-      displayName: Finish Sonarqube Analysis
-    - task: SonarCloudPublish@1
-      displayName: Publish Sonarqube Analysis
-      inputs:
-        pollingTimeoutSec: '300'
