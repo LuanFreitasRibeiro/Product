@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ProductCatalog.Application.Service
+namespace ProductCatalog.Application.Services
 {
     public class CategoryService : ICategoryService
     {

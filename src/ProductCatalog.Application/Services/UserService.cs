@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
-namespace ProductCatalog.Application
+namespace ProductCatalog.Application.Services
 {
     public class UserService : IUserService
     {
